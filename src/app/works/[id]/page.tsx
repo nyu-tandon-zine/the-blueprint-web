@@ -1,6 +1,8 @@
 import { supabase } from '@/lib/supabase'
 import type { Work } from '@/types'
 import { notFound } from 'next/navigation'
+
+export const dynamic = 'force-dynamic'
 import ProseViewer from '@/components/ProseViewer'
 import PoetryViewer from '@/components/PoetryViewer'
 import VisualArtViewer from '@/components/VisualArtViewer'

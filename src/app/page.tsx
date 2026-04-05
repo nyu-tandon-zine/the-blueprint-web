@@ -2,6 +2,8 @@ import { supabase } from '@/lib/supabase'
 import type { Work, Issue } from '@/types'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 async function getCurrentIssue(): Promise<Issue | null> {
   const { data, error } = await supabase
     .from('issues')
