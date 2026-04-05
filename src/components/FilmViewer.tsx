@@ -1,9 +1,36 @@
 import type { Work } from '@/types'
 import Link from 'next/link'
 
+function getYouTubeEmbedUrl(url: string): string | null {
+  try {
+    const parsed = new URL(url)
+
+    // https://youtu.be/VIDEO_ID
+    if (parsed.hostname === 'youtu.be') {
+      const id = parsed.pathname.slice(1)
+      return id ? `https://www.youtube.com/embed/${id}` : null
+    }
+
+    // https://www.youtube.com/watch?v=VIDEO_ID
+    if (parsed.hostname.includes('youtube.com')) {
+      // Already an embed URL
+      if (parsed.pathname.startsWith('/embed/')) return url
+
+      const id = parsed.searchParams.get('v')
+      return id ? `https://www.youtube.com/embed/${id}` : null
+    }
+
+    return null
+  } catch {
+    return null
+  }
+}
+
 export default function FilmViewer({ work }: { work: Work }) {
+  const embedUrl = work.external_link ? getYouTubeEmbedUrl(work.external_link) : null
+
   return (
-    <main className="max-w-3xl mx-auto px-8 py-10 w-full">
+    <main className="max-w-4xl mx-auto px-8 py-10 w-full">
       <Link
         href="/"
         className="inline-block text-gray-400 hover:text-gray-700 mb-8 transition-colors"
@@ -19,7 +46,18 @@ export default function FilmViewer({ work }: { work: Work }) {
       </h1>
       <p className="text-lg text-gray-600 mb-8">By {work.author?.name}</p>
 
-      {work.external_link ? (
+      {embedUrl ? (
+        <div className="w-full aspect-video rounded overflow-hidden bg-gray-100 mb-8">
+          <iframe
+            src={embedUrl}
+            title={work.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full"
+          />
+        </div>
+      ) : work.external_link ? (
+        // Fallback for non-YouTube links (e.g. Vimeo) — just show a button
         <div className="mb-8">
           <a
             href={work.external_link}
@@ -27,17 +65,17 @@ export default function FilmViewer({ work }: { work: Work }) {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-gray-900 text-white px-6 py-3 rounded hover:bg-black transition-colors text-sm font-medium"
           >
-            Watch on YouTube →
+            Watch Film →
           </a>
         </div>
       ) : (
-        <div className="w-full bg-gray-100 rounded p-6 flex items-center justify-center mb-8">
+        <div className="w-full aspect-video bg-gray-100 rounded flex items-center justify-center mb-8">
           <p className="text-gray-400 text-sm">Video link not yet available</p>
         </div>
       )}
 
       {work.description && (
-        <p className="text-gray-700 leading-relaxed">{work.description}</p>
+        <p className="text-gray-700 leading-relaxed max-w-2xl">{work.description}</p>
       )}
     </main>
   )
