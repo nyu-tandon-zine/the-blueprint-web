@@ -1,60 +1,112 @@
-'use client'
+"use client"
 
-import type { Work } from '@/types'
-import Link from 'next/link'
+import { useState, useRef } from "react";
+import Image from "next/image";
+import styles from "./AudioPlayer.module.css";
 
-export default function AudioViewer({ work }: { work: Work }) {
-  return (
-    <main className="max-w-3xl mx-auto px-8 py-10 w-full">
-      {/* Back link */}
-      <Link
-        href="/"
-        className="inline-block text-gray-400 hover:text-gray-700 mb-8 transition-colors"
-        aria-label="Back to homepage"
-      >
-        ←
-      </Link>
+interface AudioPlayerProps {
+    artist: string;
+    track: string;
+    src: string;
+}
 
-      {/* Genre label */}
-      <p className="text-sm text-gray-400 mb-3 capitalize">{work.genre}</p>
+export default function AudioPlayer({ artist, track, src }: AudioPlayerProps) {
+    const audioRef = useRef<HTMLAudioElement>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const [volume, setVolume] = useState(1);
+    const [showVolume, setShowVolume] = useState(false);
 
-      {/* Title + author */}
-      <h1 className="text-4xl font-bold text-gray-900 leading-tight mb-2">
-        {work.title}
-      </h1>
-      <p className="text-lg text-gray-600 mb-8">By {work.author?.name}</p>
+    const togglePlay = () => {
+        if (!audioRef.current) return;
+        if (isPlaying) {
+            audioRef.current.pause();
+        } else {
+            audioRef.current.play();
+        }
+        setIsPlaying(!isPlaying);
+    }
 
-      {/* Audio player */}
-      {work.media_url ? (
-        <audio
-          controls
-          className="w-full mb-8"
-          src={work.media_url}
-        >
-          Your browser does not support the audio element.
-        </audio>
-      ) : (
-        <div className="w-full bg-gray-100 rounded p-6 flex items-center justify-center mb-8">
-          <p className="text-gray-400 text-sm">Audio not yet available</p>
+    const handleTimeUpdate = () => {
+        if (!audioRef.current) return;
+        const current = audioRef.current.currentTime;
+        const duration = audioRef.current.duration;
+        setProgress((current / duration) * 100);
+    }
+
+    const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!audioRef.current) return;
+        const newTime = (Number(e.target.value) / 100) * audioRef.current.duration;
+        audioRef.current.currentTime = newTime;
+        setProgress(Number(e.target.value));
+    }
+
+    const handleVolume = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!audioRef.current) return;
+        const newVolume = Number(e.target.value);
+        audioRef.current.volume = newVolume;
+        setVolume(newVolume);
+    }
+
+    const getVolumeIcon = () => {
+        if (volume === 0) return "/quiet.svg";
+        if (volume < 0.5) return "/louder.svg";
+        return "/loudest.svg";
+    }
+
+    return (
+        <div className={styles.player}>
+            <audio ref={audioRef} onTimeUpdate={handleTimeUpdate} src={src} />
+            
+            <p className={styles.trackInfo}>{artist} - {track}</p>
+
+            <div className={styles.controls}>
+                <button className={styles.button} onClick={togglePlay}>
+                    <Image
+                        src={isPlaying ? "/pause.svg" : "/play.svg"}
+                        alt={isPlaying ? "Pause" : "Play"}
+                        width={24}
+                        height={24}
+                    />
+                </button>
+
+                <input
+                    className={styles.progressBar}
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={progress}
+                    onChange={handleSeek}
+                    style={{
+                        background: `linear-gradient(to right, #808080 ${progress}%, #d0d0d0 ${progress}%)`
+                    }}
+                />
+
+                <div className={styles.volumeWrapper}>
+                    {showVolume && (
+                        <input
+                            className={styles.volumeBar}
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.01"
+                            value={volume}
+                            onChange={handleVolume}
+                            style={{
+                                background: `linear-gradient(to right, #808080 ${volume * 100}%, #d0d0d0 ${volume * 100}%)`
+                            }}
+                        />
+                    )}
+                    <button className={styles.button} onClick={() => setShowVolume(!showVolume)}>
+                        <Image
+                            src={getVolumeIcon()}
+                            alt="Volume"
+                            width={24}
+                            height={24}
+                        />
+                    </button>
+                </div>
+            </div>
         </div>
-      )}
-
-      {/* Description */}
-      {work.description && (
-        <p className="text-gray-700 leading-relaxed mb-8">{work.description}</p>
-      )}
-
-      {/* External link (Spotify, SoundCloud, etc.) */}
-      {work.external_link && (
-        <a
-          href={work.external_link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-sm text-gray-500 hover:text-gray-900 underline underline-offset-4 transition-colors"
-        >
-          Listen in New Tab →
-        </a>
-      )}
-    </main>
-  )
+    );
 }
