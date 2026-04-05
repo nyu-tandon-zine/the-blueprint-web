@@ -6,7 +6,7 @@ The digital home of *The Blueprint*, NYU Tandon's student zine. This website hos
 
 | Layer | Technology | Purpose |
 |---|---|---|
-| Framework | [Next.js 14](https://nextjs.org/) (App Router) | Frontend + server-side rendering |
+| Framework | [Next.js 16](https://nextjs.org/) (App Router) | Frontend + server-side rendering |
 | Language | [TypeScript](https://www.typescriptlang.org/) | Type safety across the codebase |
 | Styling | [Tailwind CSS](https://tailwindcss.com/) | Utility-first CSS |
 | Database | [Supabase](https://supabase.com/) (PostgreSQL) | Structured data (works, authors, issues) |
@@ -29,7 +29,8 @@ src/
 ├── lib/
 │   └── supabase.ts       # Supabase client setup
 └── types/
-    └── index.ts          # Shared TypeScript types (Work, Author, Issue, etc.)
+    ├── index.ts          # Domain types (Work, Author, Issue, etc.)
+    └── database.ts       # Supabase table types (auto-generatable via CLI)
 ```
 
 ## Getting Started
@@ -57,11 +58,11 @@ npm install
 Create a `.env.local` file in the root of the project:
 
 ```
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_your_key_here
 ```
 
-You can find these values in your Supabase project under **Settings → API**. Ask a team lead if you need access.
+You can find these values in your Supabase project under **Settings → API Keys** (Publishable key) and **Settings → General** (Project URL). Ask a team lead if you need access.
 
 > ⚠️ Never commit `.env.local` to the repo. It is already listed in `.gitignore`.
 
