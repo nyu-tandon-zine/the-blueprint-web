@@ -38,7 +38,7 @@ export default async function HomePage() {
 
   if (!issue) {
     return (
-      <main className="min-h-screen flex items-center justify-center">
+      <main className="flex-1 bg-white flex items-center justify-center">
         <p className="text-gray-500">No current issue found.</p>
       </main>
     )
@@ -55,7 +55,8 @@ export default async function HomePage() {
   }, {})
 
   return (
-    <main className="min-h-screen bg-white px-8 py-12 max-w-4xl mx-auto">
+    <main className="flex-1 bg-white">
+      <div className="max-w-4xl mx-auto px-8 py-12">
       <header className="mb-12">
         <p className="text-sm uppercase tracking-widest text-gray-400 mb-2">
           The Blueprint
@@ -94,6 +95,7 @@ export default async function HomePage() {
           ))}
         </div>
       )}
+      </div>
     </main>
   )
 }

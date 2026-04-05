@@ -35,21 +35,21 @@ export type Database = {
         Row: {
           id: string
           name: string
-          nyu_school: string | null
+          major: string | null
           graduation_year: number | null
           bio: string | null
         }
         Insert: {
           id?: string
           name: string
-          nyu_school?: string | null
+          major?: string | null
           graduation_year?: number | null
           bio?: string | null
         }
         Update: {
           id?: string
           name?: string
-          nyu_school?: string | null
+          major?: string | null
           graduation_year?: number | null
           bio?: string | null
         }
@@ -61,7 +61,10 @@ export type Database = {
           media_type: string
           genre: string
           description: string | null
+          content: string | null
+          works_cited: string | null
           media_url: string | null
+          external_link: string | null
           created_at: string
           issue_id: string
           author_id: string
@@ -72,7 +75,10 @@ export type Database = {
           media_type: string
           genre: string
           description?: string | null
+          content?: string | null
+          works_cited?: string | null
           media_url?: string | null
+          external_link?: string | null
           created_at?: string
           issue_id: string
           author_id: string
@@ -83,7 +89,10 @@ export type Database = {
           media_type?: string
           genre?: string
           description?: string | null
+          content?: string | null
+          works_cited?: string | null
           media_url?: string | null
+          external_link?: string | null
           created_at?: string
           issue_id?: string
           author_id?: string

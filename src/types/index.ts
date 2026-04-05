@@ -2,7 +2,7 @@
 // Domain types — the shape of data used throughout the application
 // ----------------------------------------------------------------
 
-export type MediaType = 'prose' | 'poetry' | 'visual-art' | 'audio' | 'film'
+export type MediaType = 'prose' | 'poetry' | 'visual-art' | 'audio' | 'film' | 'game'
 
 export type Genre =
   | 'fiction'
@@ -25,7 +25,7 @@ export interface Issue {
 export interface Author {
   id: string
   name: string
-  nyu_school: string | null       // e.g. "Tandon School of Engineering"
+  major: string | null
   graduation_year: number | null
   bio: string | null
 }
@@ -36,7 +36,10 @@ export interface Work {
   media_type: MediaType
   genre: Genre
   description: string | null
+  content: string | null          // Full text body for prose and poetry
+  works_cited: string | null      // Optional citations section for prose
   media_url: string | null        // URL to file in Supabase Storage
+  external_link: string | null    // External link for audio (Spotify, SoundCloud, etc.)
   created_at: string
   issue_id: string
   author_id: string
