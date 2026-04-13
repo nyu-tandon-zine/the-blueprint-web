@@ -65,6 +65,12 @@ export default async function HomePage() {
         </p>
         <h1 className="text-4xl font-bold text-gray-900">{issue.title}</h1>
         <p className="text-gray-500 mt-1">{issue.semester}</p>
+        <Link
+          href="/read"
+          className="inline-block mt-4 text-sm text-gray-500 underline hover:text-gray-900 transition-colors"
+        >
+          Flipbook Mode →
+        </Link>
       </header>
 
       {works.length === 0 ? (
