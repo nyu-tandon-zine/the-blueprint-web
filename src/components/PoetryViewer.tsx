@@ -1,5 +1,6 @@
 import type { Work } from '@/types'
 import Link from 'next/link'
+import { ArticleHeader, PoetryBody } from './TextFormatter'
 
 export default function PoetryViewer({ work }: { work: Work }) {
   return (
@@ -13,22 +14,11 @@ export default function PoetryViewer({ work }: { work: Work }) {
         ←
       </Link>
 
-      {/* Genre label */}
-      <p className="text-sm text-gray-400 mb-3 capitalize">{work.genre}</p>
-
-      {/* Title + author */}
-      <h1 className="text-4xl font-bold text-gray-900 leading-tight mb-2">
-        {work.title}
-      </h1>
-      <p className="text-lg text-gray-600 mb-10">By {work.author?.name}</p>
+      <ArticleHeader work={work} />
 
       {/* Poem body — whitespace-pre-wrap preserves line breaks and indentation */}
       {work.content ? (
-        <div
-          className="text-gray-800 text-base leading-8 font-mono whitespace-pre-wrap"
-        >
-          {work.content}
-        </div>
+        <PoetryBody content={work.content} />
       ) : (
         <p className="text-gray-400 italic">No content available.</p>
       )}

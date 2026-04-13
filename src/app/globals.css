@@ -1,14 +1,101 @@
 @import "tailwindcss";
 
-/* Force light mode — design team can revisit dark mode later */
+/*
+ * Blueprint Design Tokens
+ * See DesignGuidelines.pdf for full spec.
+ * Fonts: drop .woff2 files into public/fonts/ and uncomment the @font-face blocks below.
+ */
+
+/* ── @font-face — uncomment once font files are added ──────────────────── */
+/*
+@font-face {
+  font-family: 'Blue Screen';
+  src: url('/fonts/BlueScreen.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'New Science';
+  src: url('/fonts/NewScience-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'New Science';
+  src: url('/fonts/NewScience-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'New Science';
+  src: url('/fonts/NewScience-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Motiva';
+  src: url('/fonts/Motiva-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Motiva';
+  src: url('/fonts/Motiva-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+*/
+
+/* ── Color palette ─────────────────────────────────────────────────────── */
 :root {
+  /* Neutrals */
   --background: #ffffff;
   --foreground: #171717;
+  --bp-off-white: #F8F1E2;
+  --bp-black: #000000;
+  --bp-white: #FFFFFF;
+
+  /* Blues */
+  --bp-dark-blue: #161271;
+  --bp-blue: #2B22C8;
+  --bp-blue-2: #3F4CF7;
+  --bp-blue-3: #B6CCFF;
+
+  /* Reds */
+  --bp-dark-red: #7C0A19;
+  --bp-red: #E5042C;
+  --bp-red-2: #FF3E68;
+  --bp-red-3: #FFBDD0;
+
+  /* Font stacks — custom font first, then close fallback */
+  --font-blue-screen: 'Blue Screen', 'Courier New', monospace;
+  --font-new-science: 'New Science', 'Geist', system-ui, sans-serif;
+  --font-motiva: 'Motiva', 'Geist', system-ui, sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-bp-off-white: var(--bp-off-white);
+  --color-bp-dark-blue: var(--bp-dark-blue);
+  --color-bp-blue: var(--bp-blue);
+  --color-bp-blue-2: var(--bp-blue-2);
+  --color-bp-blue-3: var(--bp-blue-3);
+  --color-bp-dark-red: var(--bp-dark-red);
+  --color-bp-red: var(--bp-red);
+  --color-bp-red-2: var(--bp-red-2);
+  --color-bp-red-3: var(--bp-red-3);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
