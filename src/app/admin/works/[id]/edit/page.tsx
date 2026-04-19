@@ -18,11 +18,6 @@ const MEDIA_TYPES: { value: MediaType; label: string }[] = [
   { value: 'game', label: 'Game' },
 ]
 
-const GENRES = [
-  'fiction', 'nonfiction', 'poetry', 'visual-art',
-  'photography', 'music', 'film', 'game', 'other',
-]
-
 export default function EditWorkPage() {
   const router = useRouter()
   const params = useParams()
@@ -155,25 +150,17 @@ export default function EditWorkPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
 
           {/* Media type */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Media Type</label>
-            <div className="flex flex-wrap gap-2">
+          <Field label="Media Type">
+            <select
+              value={mediaType}
+              onChange={(e) => setMediaType(e.target.value as MediaType)}
+              className={inputClass}
+            >
               {MEDIA_TYPES.map(({ value, label }) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => setMediaType(value)}
-                  className={`px-4 py-2 rounded text-sm font-medium border transition-colors ${
-                    mediaType === value
-                      ? 'bg-gray-900 text-white border-gray-900'
-                      : 'bg-white text-gray-600 border-gray-300 hover:border-gray-500'
-                  }`}
-                >
-                  {label}
-                </button>
+                <option key={value} value={value}>{label}</option>
               ))}
-            </div>
-          </div>
+            </select>
+          </Field>
 
           {/* Title */}
           <Field label="Title">
@@ -188,11 +175,13 @@ export default function EditWorkPage() {
 
           {/* Genre */}
           <Field label="Genre">
-            <select value={genre} onChange={(e) => setGenre(e.target.value)} className={inputClass}>
-              {GENRES.map((g) => (
-                <option key={g} value={g} className="capitalize">{g}</option>
-              ))}
-            </select>
+            <input
+              type="text"
+              value={genre}
+              onChange={(e) => setGenre(e.target.value)}
+              className={inputClass}
+              placeholder="e.g. fiction, nonfiction, fashion, photography"
+            />
           </Field>
 
           {/* Issue */}

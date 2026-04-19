@@ -4,15 +4,7 @@
 
 export type MediaType = 'prose' | 'poetry' | 'visual-art' | 'audio' | 'film' | 'game'
 
-export type Genre =
-  | 'fiction'
-  | 'nonfiction'
-  | 'poetry'
-  | 'visual-art'
-  | 'photography'
-  | 'music'
-  | 'film'
-  | 'other'
+export type Genre = string
 
 export interface Issue {
   id: string
