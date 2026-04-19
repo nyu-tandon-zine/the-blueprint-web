@@ -40,7 +40,7 @@ export default async function ReadPage() {
   const pages = await getPagesForIssue(issue.id)
 
   return (
-    <main className="flex-1 bg-white">
+    <main className="flex-1 bg-black">
       <FlipbookViewer pages={pages} issue={issue} />
     </main>
   )

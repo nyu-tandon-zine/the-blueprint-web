@@ -18,67 +18,79 @@ export default function FlipbookViewer({ pages, issue }: Props) {
 
   if (pages.length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <p className="text-gray-400 text-sm">No pages uploaded yet.</p>
+      <div className="flex items-center justify-center min-h-[60vh] bg-black">
+        <p className="text-[#B6CCFF] text-sm uppercase tracking-widest">No pages uploaded yet.</p>
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 px-8 py-12">
-      <p className="text-sm text-gray-400 uppercase tracking-widest">{issue.title}</p>
+    <div className="flex flex-col items-center justify-center min-h-[60vh] bg-black gap-8 px-8 py-12">
 
-      {/* Two-page spread */}
-      <div className="flex gap-2 w-full max-w-5xl">
+      {/* Issue title */}
+      <p className="text-lg uppercase tracking-[0.3em] text-[#B6CCFF]">
+        {issue.title}
+      </p>
 
-        {/* Left page */}
-        <div className="relative w-1/2 aspect-[3/4] bg-gray-100">
-          {leftPage && (
-            <Image
-              src={leftPage.image_url}
-              alt={`Page ${leftPage.page_number}`}
-              fill
-              className="object-cover"
-            />
-          )}
-        </div>
+      {/* Arrows + two-page spread */}
+      <div className="flex items-center gap-6 w-full max-w-5xl">
 
-        {/* Right page */}
-        <div className="relative w-1/2 aspect-[3/4] bg-gray-100">
-          {rightPage && (
-            <Image
-              src={rightPage.image_url}
-              alt={`Page ${rightPage.page_number}`}
-              fill
-              className="object-cover"
-            />
-          )}
-        </div>
-
-      </div>
-
-      {/* Navigation */}
-      <div className="flex items-center gap-6">
+        {/* Left arrow */}
         <button
           onClick={() => setSpread((s) => s - 1)}
           disabled={spread === 0}
-          className="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="text-2xl text-[#B6CCFF] hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors shrink-0"
         >
-          ← Previous
+          ←
         </button>
 
-        <span className="text-sm text-gray-400">
-          {spread + 1} / {totalSpreads}
-        </span>
+        {/* Pages */}
+        <div className="flex flex-1 shadow-2xl">
 
+          {/* Left page */}
+          <div className="relative w-1/2 aspect-[85/110] bg-[#F8F1E2]">
+            {leftPage && (
+              <Image
+                src={leftPage.image_url}
+                alt={`Page ${leftPage.page_number}`}
+                fill
+                className="object-cover"
+              />
+            )}
+          </div>
+
+          {/* Right page */}
+          <div className="relative w-1/2 aspect-[85/110] bg-[#F8F1E2]">
+            {rightPage ? (
+              <Image
+                src={rightPage.image_url}
+                alt={`Page ${rightPage.page_number}`}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-[#F8F1E2]" />
+            )}
+          </div>
+
+        </div>
+
+        {/* Right arrow */}
         <button
           onClick={() => setSpread((s) => s + 1)}
           disabled={spread === totalSpreads - 1}
-          className="px-4 py-2 text-sm text-gray-500 hover:text-gray-900 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="text-2xl text-[#B6CCFF] hover:text-white disabled:opacity-20 disabled:cursor-not-allowed transition-colors shrink-0"
         >
-          Next →
+          →
         </button>
+
       </div>
+
+      {/* Page counter */}
+      <span className="text-xs text-[#B6CCFF] uppercase tracking-widest">
+        {spread + 1} / {totalSpreads}
+      </span>
+
     </div>
   )
 }
