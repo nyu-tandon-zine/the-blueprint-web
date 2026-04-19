@@ -42,6 +42,7 @@ export default function NewWorkPage() {
   const [authorMode, setAuthorMode] = useState<'existing' | 'new'>('new')
   const [authorId, setAuthorId] = useState('')
   const [authorName, setAuthorName] = useState('')
+  const [authorEmail, setAuthorEmail] = useState('')
   const [authorMajor, setAuthorMajor] = useState('')
   const [authorGradYear, setAuthorGradYear] = useState('')
 
@@ -83,6 +84,7 @@ export default function NewWorkPage() {
           .from('authors')
           .insert({
             name: authorName.trim(),
+            email: authorEmail.trim() || null,
             major: authorMajor.trim() || null,
             graduation_year: authorGradYear ? parseInt(authorGradYear) : null,
           })
@@ -243,6 +245,13 @@ export default function NewWorkPage() {
                   onChange={(e) => setAuthorName(e.target.value)}
                   placeholder="Full name"
                   required
+                  className={inputClass}
+                />
+                <input
+                  type="email"
+                  value={authorEmail}
+                  onChange={(e) => setAuthorEmail(e.target.value)}
+                  placeholder="Email (optional)"
                   className={inputClass}
                 />
                 <div className="grid grid-cols-2 gap-3">

@@ -25,6 +25,7 @@ export interface Issue {
 export interface Author {
   id: string
   name: string
+  email: string | null
   major: string | null
   graduation_year: number | null
   bio: string | null
