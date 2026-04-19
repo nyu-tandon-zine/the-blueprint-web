@@ -32,6 +32,7 @@ export default function NewWorkPage() {
   const [worksCited, setWorksCited] = useState('')
   const [externalLink, setExternalLink] = useState('')
   const [issueId, setIssueId] = useState('')
+  const [files, setFiles] = useState<File[]>([])
   const [file, setFile] = useState<File | null>(null)
 
   // Author state — pick existing or create new
@@ -92,24 +93,23 @@ export default function NewWorkPage() {
         resolvedAuthorId = data.id
       }
 
-      // Step 2: upload media file if present
+      // Step 2: upload single audio file if present
       let mediaUrl: string | null = null
-      if (file) {
+      if (mediaType === 'audio' && file) {
         setUploadProgress('Uploading file…')
         const ext = file.name.split('.').pop()
-        const path = `${mediaType}/${Date.now()}.${ext}`
+        const path = `audio/${Date.now()}.${ext}`
         const { error: uploadError } = await supabase.storage
           .from('media')
           .upload(path, file)
         if (uploadError) throw uploadError
-
         const { data: urlData } = supabase.storage.from('media').getPublicUrl(path)
         mediaUrl = urlData.publicUrl
         setUploadProgress('')
       }
 
       // Step 3: insert the work
-      const { error: workError } = await supabase.from('works').insert({
+      const { data: newWork, error: workError } = await supabase.from('works').insert({
         title: title.trim(),
         media_type: mediaType,
         genre,
@@ -120,8 +120,28 @@ export default function NewWorkPage() {
         external_link: externalLink.trim() || null,
         issue_id: issueId,
         author_id: resolvedAuthorId,
-      })
+      }).select('id').single()
       if (workError) throw workError
+
+      // Step 4: upload images for visual-art
+      if (mediaType === 'visual-art' && files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          setUploadProgress(`Uploading image ${i + 1} of ${files.length}…`)
+          const f = files[i]
+          const ext = f.name.split('.').pop()
+          const path = `visual-art/${Date.now()}-${i}.${ext}`
+          const { error: uploadError } = await supabase.storage.from('media').upload(path, f)
+          if (uploadError) throw uploadError
+          const { data: urlData } = supabase.storage.from('media').getPublicUrl(path)
+          const { error: imgError } = await supabase.from('work_images').insert({
+            work_id: newWork.id,
+            image_url: urlData.publicUrl,
+            position: i + 1,
+          })
+          if (imgError) throw imgError
+        }
+        setUploadProgress('')
+      }
 
       router.push('/admin')
       router.refresh()
@@ -132,7 +152,6 @@ export default function NewWorkPage() {
     }
   }
 
-  const needsFile = mediaType === 'visual-art' || mediaType === 'audio'
   const needsContent = mediaType === 'prose' || mediaType === 'poetry'
   const needsExternalLink = mediaType === 'film' || mediaType === 'game' || mediaType === 'audio'
 
@@ -312,12 +331,31 @@ export default function NewWorkPage() {
             </Field>
           )}
 
-          {/* File upload — visual art and audio */}
-          {needsFile && (
-            <Field label={mediaType === 'visual-art' ? 'Image file' : 'Audio file'}>
+          {/* File upload — visual art (multiple) */}
+          {mediaType === 'visual-art' && (
+            <Field label="Images (select one or more)">
               <input
                 type="file"
-                accept={mediaType === 'visual-art' ? 'image/*' : 'audio/*'}
+                accept="image/*"
+                multiple
+                onChange={(e) => setFiles(Array.from(e.target.files ?? []))}
+                className="text-sm text-gray-600"
+              />
+              {files.length > 0 && (
+                <p className="text-xs text-gray-400 mt-1">{files.length} image{files.length > 1 ? 's' : ''} selected</p>
+              )}
+              {uploadProgress && (
+                <p className="text-xs text-gray-400 mt-1">{uploadProgress}</p>
+              )}
+            </Field>
+          )}
+
+          {/* File upload — audio (single) */}
+          {mediaType === 'audio' && (
+            <Field label="Audio file">
+              <input
+                type="file"
+                accept="audio/*"
                 onChange={(e) => setFile(e.target.files?.[0] ?? null)}
                 className="text-sm text-gray-600"
               />
