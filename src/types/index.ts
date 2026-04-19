@@ -39,4 +39,21 @@ export interface Work {
   // Joined relations (populated when fetched with select)
   issue?: Issue
   author?: Author
+  work_images?: WorkImage[]
+}
+
+export interface Page {
+  id: string
+  issue_id: string
+  page_number: number
+  image_url: string
+  created_at: string
+}
+
+export interface WorkImage {
+  id: string
+  work_id: string
+  image_url: string
+  position: number
+  created_at: string
 }

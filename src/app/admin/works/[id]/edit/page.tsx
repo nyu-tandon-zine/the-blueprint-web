@@ -36,6 +36,8 @@ export default function EditWorkPage() {
   const [authorId, setAuthorId] = useState('')
   const [file, setFile] = useState<File | null>(null)
   const [currentMediaUrl, setCurrentMediaUrl] = useState<string | null>(null)
+  const [newImages, setNewImages] = useState<File[]>([])
+  const [existingImages, setExistingImages] = useState<{ id: string; image_url: string; position: number }[]>([])
 
   // Dropdown data
   const [authors, setAuthors] = useState<Author[]>([])
@@ -49,15 +51,17 @@ export default function EditWorkPage() {
 
   useEffect(() => {
     async function loadAll() {
-      const [{ data: work }, { data: authorsData }, { data: issuesData }] =
+      const [{ data: work }, { data: authorsData }, { data: issuesData }, { data: imagesData }] =
         await Promise.all([
           supabase.from('works').select('*').eq('id', workId).single(),
           supabase.from('authors').select('id, name').order('name'),
           supabase.from('issues').select('id, semester').order('published_at', { ascending: false }),
+          supabase.from('work_images').select('*').eq('work_id', workId).order('position'),
         ])
 
       if (authorsData) setAuthors(authorsData)
       if (issuesData) setIssues(issuesData)
+      if (imagesData) setExistingImages(imagesData)
 
       if (work) {
         setMediaType(work.media_type as MediaType)
@@ -118,6 +122,27 @@ export default function EditWorkPage() {
 
       if (updateError) throw updateError
 
+      // Upload any new images for visual-art
+      if (mediaType === 'visual-art' && newImages.length > 0) {
+        const nextPosition = existingImages.length + 1
+        for (let i = 0; i < newImages.length; i++) {
+          setUploadProgress(`Uploading image ${i + 1} of ${newImages.length}…`)
+          const f = newImages[i]
+          const ext = f.name.split('.').pop()
+          const path = `visual-art/${Date.now()}-${i}.${ext}`
+          const { error: uploadError } = await supabase.storage.from('media').upload(path, f)
+          if (uploadError) throw uploadError
+          const { data: urlData } = supabase.storage.from('media').getPublicUrl(path)
+          const { error: imgError } = await supabase.from('work_images').insert({
+            work_id: workId,
+            image_url: urlData.publicUrl,
+            position: nextPosition + i,
+          })
+          if (imgError) throw imgError
+        }
+        setUploadProgress('')
+      }
+
       router.push('/admin')
       router.refresh()
     } catch (err: unknown) {
@@ -127,7 +152,6 @@ export default function EditWorkPage() {
     }
   }
 
-  const needsFile = mediaType === 'visual-art' || mediaType === 'audio'
   const needsContent = mediaType === 'prose' || mediaType === 'poetry'
   const needsExternalLink = mediaType === 'film' || mediaType === 'game' || mediaType === 'audio'
 
@@ -237,9 +261,31 @@ export default function EditWorkPage() {
             </Field>
           )}
 
-          {/* File upload */}
-          {needsFile && (
-            <Field label={mediaType === 'visual-art' ? 'Replace image (optional)' : 'Replace audio (optional)'}>
+          {/* File upload — visual art (multiple) */}
+          {mediaType === 'visual-art' && (
+            <Field label="Images">
+              {existingImages.length > 0 && (
+                <p className="text-xs text-gray-400 mb-2">
+                  {existingImages.length} image{existingImages.length > 1 ? 's' : ''} currently uploaded.
+                </p>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => setNewImages(Array.from(e.target.files ?? []))}
+                className="text-sm text-gray-600"
+              />
+              {newImages.length > 0 && (
+                <p className="text-xs text-gray-400 mt-1">{newImages.length} new image{newImages.length > 1 ? 's' : ''} selected — will be appended</p>
+              )}
+              {uploadProgress && <p className="text-xs text-gray-400 mt-1">{uploadProgress}</p>}
+            </Field>
+          )}
+
+          {/* File upload — audio (single) */}
+          {mediaType === 'audio' && (
+            <Field label="Replace audio (optional)">
               {currentMediaUrl && (
                 <p className="text-xs text-gray-400 mb-2">
                   Current file: <a href={currentMediaUrl} target="_blank" rel="noopener noreferrer" className="underline">view</a>
@@ -247,7 +293,7 @@ export default function EditWorkPage() {
               )}
               <input
                 type="file"
-                accept={mediaType === 'visual-art' ? 'image/*' : 'audio/*'}
+                accept="audio/*"
                 onChange={(e) => setFile(e.target.files?.[0] ?? null)}
                 className="text-sm text-gray-600"
               />
