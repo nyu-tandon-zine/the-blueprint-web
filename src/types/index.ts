@@ -40,3 +40,11 @@ export interface Work {
   issue?: Issue
   author?: Author
 }
+
+export interface Page {
+  id: string
+  issue_id: string
+  page_number: number
+  image_url: string
+  created_at: string
+}
