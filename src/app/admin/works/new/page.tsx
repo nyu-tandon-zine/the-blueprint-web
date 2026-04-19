@@ -24,7 +24,7 @@ export default function NewWorkPage() {
   const supabase = createClient()
 
   // Form state
-  const [mediaType, setMediaType] = useState<MediaType>('')
+  const [mediaType, setMediaType] = useState<MediaType>('prose')
   const [title, setTitle] = useState('')
   const [genre, setGenre] = useState('')
   const [description, setDescription] = useState('')
