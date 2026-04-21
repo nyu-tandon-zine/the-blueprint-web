@@ -1,9 +1,82 @@
 @import "tailwindcss";
 
-/* Force light mode — design team can revisit dark mode later */
+/* ── Custom fonts ─────────────────────────────────────────────────────────── */
+
+@font-face {
+  font-family: 'Blue Screen';
+  src: url('/fonts/Blue Screen Personal Use.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'New Science';
+  src: url('/fonts/new-science-regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Motiva Sans';
+  src: url('/fonts/motiva-sans/MotivaSansThin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Motiva Sans';
+  src: url('/fonts/motiva-sans/MotivaSansLight.woff.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Motiva Sans';
+  src: url('/fonts/motiva-sans/MotivaSansRegular.woff.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Motiva Sans';
+  src: url('/fonts/motiva-sans/MotivaSansMedium.woff.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Motiva Sans';
+  src: url('/fonts/motiva-sans/MotivaSansBold.woff.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Motiva Sans';
+  src: url('/fonts/motiva-sans/MotivaSansExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Motiva Sans';
+  src: url('/fonts/motiva-sans/MotivaSansBlack.woff.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0a0a;
+  --foreground: #ffffff;
 }
 
 @theme inline {
@@ -16,4 +89,41 @@
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+@keyframes chevronBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%       { transform: translateX(-50%) translateY(8px); }
+}
+
+@keyframes chevronGlow {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(255,255,255,0.5)) drop-shadow(0 0 12px rgba(58,142,192,0.4)); }
+  50%       { filter: drop-shadow(0 0 14px rgba(255,255,255,0.95)) drop-shadow(0 0 28px rgba(58,142,192,0.9)); }
+}
+
+.chevron-btn {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  animation: chevronBounce 2s ease-in-out infinite, chevronGlow 2s ease-in-out infinite;
+}
+
+.work-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 0.5px solid rgba(255,255,255,0.08);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s;
+  padding: 0 8px;
+  margin: 0 -8px;
+  border-radius: 4px;
+}
+
+.work-row:hover {
+  background: rgba(192, 57, 43, 0.08);
 }

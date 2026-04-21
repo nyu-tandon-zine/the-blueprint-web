@@ -10,20 +10,20 @@ export default function VisualArtViewer({ work }: { work: Work }) {
       {/* Back link */}
       <Link
         href="/"
-        className="inline-block text-gray-400 hover:text-gray-700 mb-8 transition-colors"
+        className="inline-block text-gray-500 hover:text-white mb-8 transition-colors"
         aria-label="Back to homepage"
       >
         ←
       </Link>
 
       {/* Genre label */}
-      <p className="text-sm text-gray-400 mb-3 capitalize">{work.genre}</p>
+      <p className="text-sm text-gray-500 mb-3 capitalize">{work.genre}</p>
 
       {/* Title + author */}
-      <h1 className="text-4xl font-bold text-gray-900 leading-tight mb-2">
+      <h1 className="text-4xl font-bold text-white leading-tight mb-2">
         {work.title}
       </h1>
-      <p className="text-lg text-gray-600 mb-8">By {work.author?.name}</p>
+      <p className="text-lg text-gray-400 mb-8">By {work.author?.name}</p>
 
       {/* Images */}
       {images.length > 0 ? (
@@ -31,7 +31,7 @@ export default function VisualArtViewer({ work }: { work: Work }) {
           {images
             .sort((a, b) => a.position - b.position)
             .map((img) => (
-              <div key={img.id} className="relative w-full aspect-[4/3] bg-gray-100 rounded overflow-hidden">
+              <div key={img.id} className="relative w-full aspect-[4/3] bg-white/5 rounded overflow-hidden">
                 <Image
                   src={img.image_url}
                   alt={`${work.title} — image ${img.position}`}
@@ -43,7 +43,7 @@ export default function VisualArtViewer({ work }: { work: Work }) {
         </div>
       ) : work.media_url ? (
         // Fallback to legacy single media_url
-        <div className="relative w-full aspect-[4/3] bg-gray-100 rounded overflow-hidden mb-8">
+        <div className="relative w-full aspect-[4/3] bg-white/5 rounded overflow-hidden mb-8">
           <Image
             src={work.media_url}
             alt={work.title}
@@ -52,14 +52,14 @@ export default function VisualArtViewer({ work }: { work: Work }) {
           />
         </div>
       ) : (
-        <div className="w-full aspect-[4/3] bg-gray-100 rounded flex items-center justify-center mb-8">
-          <p className="text-gray-400 text-sm">Image not yet available</p>
+        <div className="w-full aspect-[4/3] bg-white/5 rounded flex items-center justify-center mb-8">
+          <p className="text-gray-500 text-sm">Image not yet available</p>
         </div>
       )}
 
       {/* Description */}
       {work.description && (
-        <p className="text-gray-700 leading-relaxed max-w-2xl">{work.description}</p>
+        <p className="text-gray-300 leading-relaxed max-w-2xl">{work.description}</p>
       )}
     </main>
   )

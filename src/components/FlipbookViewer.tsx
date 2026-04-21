@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import type { Page, Issue } from '@/types'
 
 interface Props {
@@ -27,10 +28,28 @@ export default function FlipbookViewer({ pages, issue }: Props) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] bg-black gap-8 px-8 py-12">
 
-      {/* Issue title */}
-      <p className="text-lg uppercase tracking-[0.3em] text-[#B6CCFF]">
-        {issue.title}
-      </p>
+      {/* Issue title + back link */}
+      <div className="flex flex-col items-center gap-3">
+        <p style={{
+          fontSize: 'clamp(20px, 3vw, 28px)',
+          fontWeight: 700,
+          letterSpacing: 5,
+          color: '#3a8ec0',
+          fontFamily: "'New Science', 'Courier New', monospace",
+          textAlign: 'center',
+        }}>
+          {issue.semester.toUpperCase()}
+        </p>
+        <Link href="/" style={{
+          fontSize: 12,
+          color: 'rgba(255,255,255,0.35)',
+          fontFamily: 'sans-serif',
+          letterSpacing: 2,
+          textDecoration: 'none',
+        }}>
+          ↳ Web Mode
+        </Link>
+      </div>
 
       {/* Arrows + two-page spread */}
       <div className="flex items-center gap-6 w-full max-w-5xl">
