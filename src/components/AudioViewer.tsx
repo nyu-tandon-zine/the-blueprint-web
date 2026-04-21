@@ -9,20 +9,20 @@ export default function AudioViewer({ work }: { work: Work }) {
       {/* Back link */}
       <Link
         href="/"
-        className="inline-block text-gray-400 hover:text-gray-700 mb-8 transition-colors"
+        className="inline-block text-gray-500 hover:text-white mb-8 transition-colors"
         aria-label="Back to homepage"
       >
         ←
       </Link>
 
       {/* Genre label */}
-      <p className="text-sm text-gray-400 mb-3 capitalize">{work.genre}</p>
+      <p className="text-sm text-gray-500 mb-3 capitalize">{work.genre}</p>
 
       {/* Title + author */}
-      <h1 className="text-4xl font-bold text-gray-900 leading-tight mb-2">
+      <h1 className="text-4xl font-bold text-white leading-tight mb-2">
         {work.title}
       </h1>
-      <p className="text-lg text-gray-600 mb-8">By {work.author?.name}</p>
+      <p className="text-lg text-gray-400 mb-8">By {work.author?.name}</p>
 
       {/* Audio player */}
       {work.media_url ? (
@@ -34,14 +34,14 @@ export default function AudioViewer({ work }: { work: Work }) {
           Your browser does not support the audio element.
         </audio>
       ) : (
-        <div className="w-full bg-gray-100 rounded p-6 flex items-center justify-center mb-8">
-          <p className="text-gray-400 text-sm">Audio not yet available</p>
+        <div className="w-full bg-white/5 rounded p-6 flex items-center justify-center mb-8">
+          <p className="text-gray-500 text-sm">Audio not yet available</p>
         </div>
       )}
 
       {/* Description */}
       {work.description && (
-        <p className="text-gray-700 leading-relaxed mb-8">{work.description}</p>
+        <p className="text-gray-300 leading-relaxed mb-8">{work.description}</p>
       )}
 
       {/* External link (Spotify, SoundCloud, etc.) */}
@@ -50,7 +50,7 @@ export default function AudioViewer({ work }: { work: Work }) {
           href={work.external_link}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-gray-500 hover:text-gray-900 underline underline-offset-4 transition-colors"
+          className="text-sm text-gray-500 hover:text-white underline underline-offset-4 transition-colors"
         >
           Listen in New Tab →
         </a>
