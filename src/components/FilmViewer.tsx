@@ -33,21 +33,21 @@ export default function FilmViewer({ work }: { work: Work }) {
     <main className="max-w-4xl mx-auto px-8 py-10 w-full">
       <Link
         href="/"
-        className="inline-block text-gray-400 hover:text-gray-700 mb-8 transition-colors"
+        className="inline-block text-gray-500 hover:text-white mb-8 transition-colors"
         aria-label="Back to homepage"
       >
         ←
       </Link>
 
-      <p className="text-sm text-gray-400 mb-3 capitalize">{work.genre}</p>
+      <p className="text-sm text-gray-500 mb-3 capitalize">{work.genre}</p>
 
-      <h1 className="text-4xl font-bold text-gray-900 leading-tight mb-2">
+      <h1 className="text-4xl font-bold text-white leading-tight mb-2">
         {work.title}
       </h1>
-      <p className="text-lg text-gray-600 mb-8">By {work.author?.name}</p>
+      <p className="text-lg text-gray-400 mb-8">By {work.author?.name}</p>
 
       {embedUrl ? (
-        <div className="w-full aspect-video rounded overflow-hidden bg-gray-100 mb-8">
+        <div className="w-full aspect-video rounded overflow-hidden bg-white/5 mb-8">
           <iframe
             src={embedUrl}
             title={work.title}
@@ -63,19 +63,19 @@ export default function FilmViewer({ work }: { work: Work }) {
             href={work.external_link}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-gray-900 text-white px-6 py-3 rounded hover:bg-black transition-colors text-sm font-medium"
+            className="inline-flex items-center gap-2 bg-white/10 text-white px-6 py-3 rounded hover:bg-white/20 transition-colors text-sm font-medium"
           >
             Watch Film →
           </a>
         </div>
       ) : (
-        <div className="w-full aspect-video bg-gray-100 rounded flex items-center justify-center mb-8">
-          <p className="text-gray-400 text-sm">Video link not yet available</p>
+        <div className="w-full aspect-video bg-white/5 rounded flex items-center justify-center mb-8">
+          <p className="text-gray-500 text-sm">Video link not yet available</p>
         </div>
       )}
 
       {work.description && (
-        <p className="text-gray-700 leading-relaxed max-w-2xl">{work.description}</p>
+        <p className="text-gray-300 leading-relaxed max-w-2xl">{work.description}</p>
       )}
     </main>
   )

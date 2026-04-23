@@ -4,15 +4,7 @@
 
 export type MediaType = 'prose' | 'poetry' | 'visual-art' | 'audio' | 'film' | 'game'
 
-export type Genre =
-  | 'fiction'
-  | 'nonfiction'
-  | 'poetry'
-  | 'visual-art'
-  | 'photography'
-  | 'music'
-  | 'film'
-  | 'other'
+export type Genre = string
 
 export interface Issue {
   id: string
@@ -25,6 +17,7 @@ export interface Issue {
 export interface Author {
   id: string
   name: string
+  email: string | null
   major: string | null
   graduation_year: number | null
   bio: string | null
@@ -46,4 +39,29 @@ export interface Work {
   // Joined relations (populated when fetched with select)
   issue?: Issue
   author?: Author
+  work_images?: WorkImage[]
+}
+
+export interface Page {
+  id: string
+  issue_id: string
+  page_number: number
+  image_url: string
+  created_at: string
+}
+
+export interface WorkImage {
+  id: string
+  work_id: string
+  image_url: string
+  position: number
+  created_at: string
+}
+
+export interface Page {
+  id: string
+  issue_id: string
+  page_number: number
+  image_url: string
+  created_at: string
 }
