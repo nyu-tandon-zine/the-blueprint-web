@@ -439,6 +439,7 @@ export default function NewWorkPage() {
                     name: authorMode === 'existing'
                       ? authors.find((a) => a.id === authorId)?.name ?? 'Unknown'
                       : authorName || 'Author Name',
+                    email: null,
                     major: null,
                     graduation_year: null,
                     bio: null,
