@@ -1,9 +1,39 @@
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
 import type { Work } from '@/types'
 import Link from 'next/link'
+import { blueprintStyles } from './TextFormatter'
 
 export default function ProseViewer({ work }: { work: Work }) {
+  const date = work.created_at
+    ? new Date(work.created_at).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : null
+
+  const headerRef = useRef<HTMLDivElement>(null)
+  const [headerHidden, setHeaderHidden] = useState(false)
+
+  useEffect(() => {
+    const el = headerRef.current
+    if (!el) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setHeaderHidden(!entry.isIntersecting),
+      { threshold: 0 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <main className="max-w-3xl mx-auto px-8 py-10 w-full">
+    <main
+      className="min-h-screen w-full"
+      style={{ background: 'linear-gradient(160deg, var(--bp-dark-blue) 0%, var(--bp-blue) 100%)' }}
+    >
       {/* Back link */}
       <Link
         href="/"
@@ -44,7 +74,7 @@ export default function ProseViewer({ work }: { work: Work }) {
             ))}
           </div>
         </div>
-      )}
+      </div>
     </main>
   )
 }

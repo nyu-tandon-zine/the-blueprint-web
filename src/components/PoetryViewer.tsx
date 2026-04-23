@@ -1,5 +1,6 @@
 import type { Work } from '@/types'
 import Link from 'next/link'
+import { ArticleHeader, PoetryBody } from './TextFormatter'
 
 // Renders a line of text, converting *italic* spans to <em> tags
 function renderLine(line: string, lineIndex: number) {

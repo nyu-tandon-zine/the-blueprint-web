@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase-browser'
-import type { MediaType } from '@/types'
 
+import type { MediaType, Work } from '@/types'
 import Link from 'next/link'
+import { ArticleHeader, ProseBody, PoetryBody, WorksCited } from '@/components/TextFormatter'
 
 type Author = { id: string; name: string }
 type Issue = { id: string; semester: string }
@@ -52,6 +53,7 @@ export default function NewWorkPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState('')
+  const [showPreview, setShowPreview] = useState(false)
 
   useEffect(() => {
     async function loadData() {
@@ -393,6 +395,15 @@ export default function NewWorkPage() {
             >
               {loading ? 'Saving…' : 'Add Work'}
             </button>
+            {needsContent && (
+              <button
+                type="button"
+                onClick={() => setShowPreview((v) => !v)}
+                className="px-6 py-2 rounded text-sm font-medium border border-gray-300 text-gray-600 hover:border-gray-500 transition-colors"
+              >
+                {showPreview ? 'Hide Preview' : 'Preview'}
+              </button>
+            )}
             <Link
               href="/admin"
               className="px-6 py-2 rounded text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors"
@@ -401,6 +412,54 @@ export default function NewWorkPage() {
             </Link>
           </div>
         </form>
+
+        {/* Live preview */}
+        {showPreview && needsContent && (
+          <div className="mt-10 border-t border-gray-200 pt-8">
+            <p className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-6">
+              Live Preview
+            </p>
+            <div className="border border-gray-200 rounded-lg p-8 bg-white">
+              <ArticleHeader
+                work={{
+                  id: '',
+                  title: title || 'Untitled',
+                  media_type: mediaType,
+                  genre: genre as Work['genre'],
+                  description: null,
+                  content: content || null,
+                  works_cited: worksCited || null,
+                  media_url: null,
+                  external_link: null,
+                  created_at: new Date().toISOString(),
+                  issue_id: '',
+                  author_id: '',
+                  author: {
+                    id: '',
+                    name: authorMode === 'existing'
+                      ? authors.find((a) => a.id === authorId)?.name ?? 'Unknown'
+                      : authorName || 'Author Name',
+                    major: null,
+                    graduation_year: null,
+                    bio: null,
+                  },
+                }}
+              />
+              {content ? (
+                mediaType === 'poetry' ? (
+                  <PoetryBody content={content} />
+                ) : (
+                  <ProseBody content={content} />
+                )
+              ) : (
+                <p className="text-gray-300 italic text-sm">
+                  Start typing or paste content above to see the preview...
+                </p>
+              )}
+              {worksCited && <WorksCited text={worksCited} />}
+            </div>
+          </div>
+        )}
       </div>
     </main>
   )
