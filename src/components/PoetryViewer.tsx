@@ -1,6 +1,5 @@
 import type { Work } from '@/types'
 import Link from 'next/link'
-import { ArticleHeader, PoetryBody } from './TextFormatter'
 
 // Renders a line of text, converting *italic* spans to <em> tags
 function renderLine(line: string, lineIndex: number) {
@@ -18,34 +17,124 @@ function renderLine(line: string, lineIndex: number) {
 }
 
 export default function PoetryViewer({ work }: { work: Work }) {
+  const date = work.created_at
+    ? new Date(work.created_at).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : null
+
   return (
-    <main className="max-w-3xl mx-auto px-8 py-10 w-full">
-      {/* Back link */}
-      <Link
-        href="/"
-        className="inline-block text-gray-500 hover:text-white mb-8 transition-colors"
-        aria-label="Back to homepage"
-      >
-        ←
-      </Link>
+    <div
+      style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(160deg, #0c0a45 0%, #16128a 100%)',
+        color: '#fff',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      {/* ── Top bar ── */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px' }}>
+        <Link
+          href="/"
+          style={{
+            color: 'rgba(255,255,255,0.6)',
+            textDecoration: 'none',
+            fontSize: 13,
+            fontFamily: 'sans-serif',
+            letterSpacing: 1,
+          }}
+        >
+          ← Back
+        </Link>
+      </div>
 
-      {/* Genre label */}
-      <p className="text-sm text-gray-500 mb-3 capitalize">{work.genre}</p>
+      {/* ── Two-column body ── */}
+      <div style={{ display: 'flex', flex: 1, padding: '24px 40px 60px' }}>
 
-      {/* Title + author */}
-      <h1 className="text-4xl font-bold text-white leading-tight mb-2">
-        {work.title}
-      </h1>
-      <p className="text-lg text-gray-400 mb-10">By {work.author?.name}</p>
-
-      {/* Poem body — preserves line breaks and indentation, renders *italic* spans */}
-      {work.content ? (
-        <div className="text-gray-200 text-base leading-8 font-mono whitespace-pre-wrap">
-          {work.content.split('\n').map((line, i) => renderLine(line, i))}
+        {/* Left: genre label */}
+        <div style={{ width: 220, flexShrink: 0, paddingTop: 4 }}>
+          <p style={{
+            fontFamily: "'Blue Screen', 'Courier New', monospace",
+            fontSize: 22,
+            letterSpacing: '0.25em',
+            color: 'rgba(255,255,255,0.85)',
+            textTransform: 'uppercase',
+            wordBreak: 'break-all',
+          }}>
+            {work.genre}
+          </p>
         </div>
-      ) : (
-        <p className="text-gray-500 italic">No content available.</p>
-      )}
-    </main>
+
+        {/* Vertical divider */}
+        <div style={{ width: 1, background: 'rgba(255,255,255,0.2)', flexShrink: 0, marginRight: 48 }} />
+
+        {/* Right: poem content */}
+        <div style={{ flex: 1, maxWidth: 680 }}>
+
+          {/* Corner brackets */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 24, color: 'rgba(255,255,255,0.4)', fontSize: 18, lineHeight: 1 }}>
+            <span>┌</span>
+            <span>┐</span>
+          </div>
+
+          {/* Title */}
+          <h1 style={{
+            fontSize: 'clamp(28px, 4vw, 42px)',
+            fontWeight: 400,
+            color: '#fff',
+            fontFamily: "'New Science', 'Courier New', monospace",
+            lineHeight: 1.2,
+            marginBottom: 10,
+          }}>
+            {work.title}
+          </h1>
+
+          {/* Author */}
+          <p style={{
+            fontSize: 16,
+            color: 'rgba(255,255,255,0.75)',
+            fontStyle: 'italic',
+            fontFamily: 'sans-serif',
+            marginBottom: 4,
+          }}>
+            By {work.author?.name}
+          </p>
+
+          {/* Date */}
+          {date && (
+            <p style={{
+              fontSize: 12,
+              color: 'rgba(255,255,255,0.45)',
+              fontFamily: 'sans-serif',
+              marginBottom: 40,
+              letterSpacing: 0.5,
+            }}>
+              {date}
+            </p>
+          )}
+
+          {/* Poem body */}
+          {work.content ? (
+            <div style={{
+              fontSize: 15,
+              lineHeight: 2,
+              color: 'rgba(255,255,255,0.85)',
+              fontFamily: "'Motiva Sans', sans-serif",
+              whiteSpace: 'pre-wrap',
+            }}>
+              {work.content.split('\n').map((line, i) => renderLine(line, i))}
+            </div>
+          ) : (
+            <p style={{ color: 'rgba(255,255,255,0.35)', fontStyle: 'italic', fontFamily: 'sans-serif' }}>
+              No content available.
+            </p>
+          )}
+
+        </div>
+      </div>
+    </div>
   )
 }

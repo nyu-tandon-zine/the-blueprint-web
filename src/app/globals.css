@@ -1,70 +1,87 @@
 @import "tailwindcss";
 
+/* ── Custom fonts ─────────────────────────────────────────────────────────── */
 
-/*
- * Blueprint Design Tokens
- * See DesignGuidelines.pdf for full spec.
- * Fonts: drop .woff2 files into public/fonts/ and uncomment the @font-face blocks below.
- */
-
-/* ── @font-face — uncomment once font files are added ──────────────────── */
-/*
 @font-face {
   font-family: 'Blue Screen';
-  src: url('/fonts/BlueScreen.woff2') format('woff2');
-  font-weight: 400;
-
+  src: url('/fonts/Blue Screen Personal Use.ttf') format('truetype');
+  font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
   font-family: 'New Science';
-  src: url('/fonts/NewScience-Regular.woff2') format('woff2');
-  font-weight: 400;
-
+  src: url('/fonts/new-science-regular.otf') format('opentype');
+  font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'New Science';
-  src: url('/fonts/NewScience-Italic.woff2') format('woff2');
-  font-weight: 400;
-  font-style: italic;
+  font-family: 'Motiva Sans';
+  src: url('/fonts/motiva-sans/MotivaSansThin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'New Science';
-  src: url('/fonts/NewScience-Bold.woff2') format('woff2');
+  font-family: 'Motiva Sans';
+  src: url('/fonts/motiva-sans/MotivaSansLight.woff.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Motiva Sans';
+  src: url('/fonts/motiva-sans/MotivaSansRegular.woff.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Motiva Sans';
+  src: url('/fonts/motiva-sans/MotivaSansMedium.woff.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Motiva Sans';
+  src: url('/fonts/motiva-sans/MotivaSansBold.woff.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Motiva';
-  src: url('/fonts/Motiva-Regular.woff2') format('woff2');
-  font-weight: 400;
+  font-family: 'Motiva Sans';
+  src: url('/fonts/motiva-sans/MotivaSansExtraBold.ttf') format('truetype');
+  font-weight: 800;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'Motiva';
-  src: url('/fonts/Motiva-Bold.woff2') format('woff2');
-  font-weight: 700;
+  font-family: 'Motiva Sans';
+  src: url('/fonts/motiva-sans/MotivaSansBlack.woff.ttf') format('truetype');
+  font-weight: 900;
   font-style: normal;
   font-display: swap;
 }
-*/
 
-/* ── Color palette ─────────────────────────────────────────────────────── */
+/* ── Blueprint design tokens (from DesignGuidelines.pdf) ──────────────────── */
+
 :root {
+  /* Site defaults */
+  --background: #0a0a0a;
+  --foreground: #ffffff;
+
   /* Neutrals */
-  --background: #ffffff;
-  --foreground: #171717;
   --bp-off-white: #F8F1E2;
   --bp-black: #000000;
   --bp-white: #FFFFFF;
@@ -81,10 +98,10 @@
   --bp-red-2: #FF3E68;
   --bp-red-3: #FFBDD0;
 
-  /* Font stacks — custom font first, then close fallback */
+  /* Font stacks */
   --font-blue-screen: 'Blue Screen', 'Courier New', monospace;
-  --font-new-science: 'New Science', 'Geist', system-ui, sans-serif;
-  --font-motiva: 'Motiva', 'Geist', system-ui, sans-serif;
+  --font-new-science: 'New Science', 'Courier New', monospace;
+  --font-motiva: 'Motiva Sans', 'Helvetica Neue', sans-serif;
 }
 
 @theme inline {
@@ -108,6 +125,8 @@ body {
   color: var(--foreground);
 }
 
+/* ── Animations ───────────────────────────────────────────────────────────── */
+
 @keyframes chevronBounce {
   0%, 100% { transform: translateX(-50%) translateY(0); }
   50%       { transform: translateX(-50%) translateY(8px); }
@@ -128,6 +147,8 @@ body {
   padding: 8px;
   animation: chevronBounce 2s ease-in-out infinite, chevronGlow 2s ease-in-out infinite;
 }
+
+/* ── Work list row ────────────────────────────────────────────────────────── */
 
 .work-row {
   display: flex;
