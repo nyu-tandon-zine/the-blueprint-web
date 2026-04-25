@@ -26,6 +26,12 @@ export default async function AdminDashboard() {
           </div>
           <div className="flex items-center gap-4">
             <Link
+              href="/admin/pages"
+              className="border border-gray-300 text-gray-700 px-4 py-2 rounded text-sm font-medium hover:bg-gray-50 transition-colors"
+            >
+              Manage Pages
+            </Link>
+            <Link
               href="/admin/works/new"
               className="bg-gray-900 text-white px-4 py-2 rounded text-sm font-medium hover:bg-black transition-colors"
             >

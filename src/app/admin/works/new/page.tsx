@@ -434,6 +434,7 @@ export default function NewWorkPage() {
                   created_at: new Date().toISOString(),
                   issue_id: '',
                   author_id: '',
+                  start_page: null,
                   author: {
                     id: '',
                     name: authorMode === 'existing'
