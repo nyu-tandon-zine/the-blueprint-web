@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function Navbar() {
   return (
@@ -11,28 +12,24 @@ export default function Navbar() {
     >
       <div className="flex items-center justify-between px-8 h-16">
 
-        {/* Logo box */}
-        <Link href="/" style={{
-          width: 40,
-          height: 40,
-          border: '1.5px solid #3a8ec0',
-          borderRadius: 6,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          fontSize: 11,
-          fontWeight: 700,
-          color: '#3a8ec0',
-          letterSpacing: '-0.5px',
-          lineHeight: 1.1,
-          textAlign: 'center',
-          padding: 3,
-          textDecoration: 'none',
-          fontFamily: 'monospace',
-        }}>
-          <span>THE</span>
-          <span>B</span>
+        {/* Logo + wordmark */}
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
+          <Image
+            src="/logo.png"
+            alt="The Blueprint"
+            width={28}
+            height={40}
+            style={{ objectFit: 'contain' }}
+          />
+          <span style={{
+            fontFamily: "'Blue Screen', 'Courier New', monospace",
+            fontSize: 13,
+            letterSpacing: 3,
+            color: '#B6CCFF',
+            textTransform: 'uppercase',
+          }}>
+            The Blueprint
+          </span>
         </Link>
 
         {/* Nav links */}
@@ -48,7 +45,7 @@ export default function Navbar() {
               style={{
                 fontSize: 14,
                 textDecoration: 'none',
-                color: 'rgba(255,255,255,0.55)',
+                color: 'rgba(255,255,255,0.85)',
                 fontFamily: 'sans-serif',
               }}
             >
@@ -65,7 +62,7 @@ export default function Navbar() {
               borderRadius: 4,
               padding: '4px 12px',
               fontSize: 12,
-              color: 'rgba(255,255,255,0.35)',
+              color: 'rgba(255,255,255,0.6)',
               fontFamily: 'sans-serif',
               letterSpacing: 1,
               textDecoration: 'none',
