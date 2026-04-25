@@ -36,6 +36,7 @@ export interface Work {
   created_at: string
   issue_id: string
   author_id: string
+  start_page: number | null       // Page number in the print zine where this work begins
   // Joined relations (populated when fetched with select)
   issue?: Issue
   author?: Author
@@ -55,13 +56,5 @@ export interface WorkImage {
   work_id: string
   image_url: string
   position: number
-  created_at: string
-}
-
-export interface Page {
-  id: string
-  issue_id: string
-  page_number: number
-  image_url: string
   created_at: string
 }

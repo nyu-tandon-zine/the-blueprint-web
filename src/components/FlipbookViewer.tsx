@@ -1,19 +1,35 @@
 'use client'
 
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import type { Page, Issue } from '@/types'
+import type { Page, Issue, Work } from '@/types'
 
 interface Props {
   pages: Page[]
   issue: Issue
+  works: Work[]
 }
 
-export default function FlipbookViewer({ pages, issue }: Props) {
-  const [spread, setSpread] = useState(0)
-
+export default function FlipbookViewer({ pages, issue, works }: Props) {
+  const searchParams = useSearchParams()
   const totalSpreads = Math.ceil(pages.length / 2)
+
+  // Initialise spread from ?work= param if present
+  const initialSpread = (() => {
+    const workId = searchParams.get('work')
+    if (workId) {
+      const match = works.find((w) => w.id === workId)
+      if (match?.start_page != null) {
+        return Math.floor((match.start_page - 1) / 2)
+      }
+    }
+    return 0
+  })()
+
+  const [spread, setSpread] = useState(initialSpread)
+
   const leftPage = pages[spread * 2]
   const rightPage = pages[spread * 2 + 1]
 
@@ -50,6 +66,38 @@ export default function FlipbookViewer({ pages, issue }: Props) {
           ↳ Web Mode
         </Link>
       </div>
+
+      {/* Jump-to dropdown — only shown if any works have start_page set */}
+      {works.length > 0 && (
+        <select
+          value=""
+          onChange={(e) => {
+            const work = works.find((w) => w.id === e.target.value)
+            if (work?.start_page != null) {
+              setSpread(Math.floor((work.start_page - 1) / 2))
+            }
+          }}
+          style={{
+            background: 'rgba(255,255,255,0.06)',
+            border: '0.5px solid rgba(255,255,255,0.15)',
+            borderRadius: 6,
+            color: 'rgba(255,255,255,0.7)',
+            fontFamily: 'sans-serif',
+            fontSize: 13,
+            padding: '8px 14px',
+            cursor: 'pointer',
+            outline: 'none',
+            minWidth: 220,
+          }}
+        >
+          <option value="" disabled style={{ background: '#111' }}>Jump to…</option>
+          {works.map((w) => (
+            <option key={w.id} value={w.id} style={{ background: '#111' }}>
+              {w.title}
+            </option>
+          ))}
+        </select>
+      )}
 
       {/* Arrows + two-page spread */}
       <div className="flex items-center gap-6 w-full max-w-5xl">

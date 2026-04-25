@@ -38,6 +38,7 @@ export default function EditWorkPage() {
   const [currentMediaUrl, setCurrentMediaUrl] = useState<string | null>(null)
   const [newImages, setNewImages] = useState<File[]>([])
   const [existingImages, setExistingImages] = useState<{ id: string; image_url: string; position: number }[]>([])
+  const [startPage, setStartPage] = useState<string>('')
 
   // Dropdown data
   const [authors, setAuthors] = useState<Author[]>([])
@@ -74,6 +75,7 @@ export default function EditWorkPage() {
         setIssueId(work.issue_id)
         setAuthorId(work.author_id)
         setCurrentMediaUrl(work.media_url)
+        setStartPage(work.start_page != null ? String(work.start_page) : '')
       }
 
       setFetchingWork(false)
@@ -117,6 +119,7 @@ export default function EditWorkPage() {
           external_link: externalLink.trim() || null,
           issue_id: issueId,
           author_id: authorId,
+          start_page: startPage !== '' ? parseInt(startPage, 10) : null,
         })
         .eq('id', workId)
 
@@ -318,6 +321,37 @@ export default function EditWorkPage() {
               />
             </Field>
           )}
+
+          {/* Flipbook start page + QR code */}
+          <Field label="Flipbook start page (optional)">
+            <input
+              type="number"
+              min={1}
+              value={startPage}
+              onChange={(e) => setStartPage(e.target.value)}
+              placeholder="e.g. 12"
+              className={inputClass}
+            />
+            <p className="text-xs text-gray-400 mt-1">
+              The page number in the print zine where this work begins. Used for the flipbook jump menu and QR codes.
+            </p>
+            {startPage !== '' && (
+              <div className="mt-3 flex items-start gap-4">
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(`${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/read?work=${workId}`)}&size=120x120&margin=4`}
+                  alt="QR code for this work in flipbook"
+                  width={120}
+                  height={120}
+                  className="border border-gray-200 rounded"
+                />
+                <div>
+                  <p className="text-xs text-gray-500 font-medium mb-1">QR code</p>
+                  <p className="text-xs text-gray-400">Points to <code className="bg-gray-100 px-1 rounded">/read?work={workId}</code></p>
+                  <p className="text-xs text-gray-400 mt-1">Right-click the QR image to save it for print.</p>
+                </div>
+              </div>
+            )}
+          </Field>
 
           {error && <p className="text-sm text-red-600">{error}</p>}
 
