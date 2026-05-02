@@ -77,26 +77,22 @@ export default function AudioPlayer({ tracks, initialIndex = 0 }: AudioPlayerPro
 
     const currentTrack = tracks[trackIndex];
 
-    // Set up Web Audio API analyser once on mount
-    useEffect(() => {
+    // Set up Web Audio API analyser lazily on first play (must be inside a user gesture)
+    const setupAudioGraph = useCallback(() => {
         const audio = audioRef.current;
-        if (!audio) return;
+        if (!audio || sourceNodeRef.current) return; // already set up
 
         const ctx = getAudioContext();
+        const source = ctx.createMediaElementSource(audio);
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.8;
 
-        // Only create the source node once per audio element
-        if (!sourceNodeRef.current) {
-            const source = ctx.createMediaElementSource(audio);
-            const analyser = ctx.createAnalyser();
-            analyser.fftSize = 256; // 128 frequency bins
-            analyser.smoothingTimeConstant = 0.8;
+        source.connect(analyser);
+        analyser.connect(ctx.destination);
 
-            source.connect(analyser);
-            analyser.connect(ctx.destination);
-
-            sourceNodeRef.current = source;
-            analyserRef.current = analyser;
-        }
+        sourceNodeRef.current = source;
+        analyserRef.current = analyser;
     }, []);
 
     // Draw the FFT spectrum on every animation frame
@@ -157,9 +153,6 @@ export default function AudioPlayer({ tracks, initialIndex = 0 }: AudioPlayerPro
     // Start / stop the draw loop based on playback state
     useEffect(() => {
         if (isPlaying) {
-            // Resume AudioContext if suspended (browser autoplay policy)
-            const ctx = getAudioContext();
-            if (ctx.state === "suspended") ctx.resume();
             rafRef.current = requestAnimationFrame(drawSpectrum);
         } else {
             if (rafRef.current) {
@@ -228,15 +221,18 @@ export default function AudioPlayer({ tracks, initialIndex = 0 }: AudioPlayerPro
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [trackIndex]);
 
-    const togglePlay = () => {
+    const togglePlay = async () => {
         const audio = audioRef.current;
         if (!audio) return;
-        const ctx = getAudioContext();
+
         if (isPlaying) {
             audio.pause();
             setIsPlaying(false);
         } else {
-            if (ctx.state === "suspended") ctx.resume();
+            // Set up Web Audio graph on first play (requires user gesture)
+            setupAudioGraph();
+            const ctx = getAudioContext();
+            if (ctx.state === "suspended") await ctx.resume();
             audio.play().catch(() => {});
             setIsPlaying(true);
         }
@@ -308,6 +304,7 @@ export default function AudioPlayer({ tracks, initialIndex = 0 }: AudioPlayerPro
             <audio
                 ref={audioRef}
                 src={currentTrack.src}
+                crossOrigin="anonymous"
                 onLoadedMetadata={handleLoadedMetadata}
                 onEnded={handleEnded}
                 onPlay={handlePlay}
