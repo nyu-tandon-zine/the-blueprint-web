@@ -29,7 +29,7 @@ export default function PoetryViewer({ work }: { work: Work }) {
     <div
       style={{
         minHeight: '100vh',
-        background: 'linear-gradient(160deg, #0c0a45 0%, #16128a 100%)',
+        background: 'linear-gradient(160deg, #130704 0%, #3d1108 60%, #4e1509 100%)',
         color: '#fff',
         display: 'flex',
         flexDirection: 'column',

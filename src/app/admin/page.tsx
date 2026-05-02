@@ -4,6 +4,7 @@ import Link from 'next/link'
 import type { Work } from '@/types'
 import AdminLogout from '@/components/AdminLogout'
 import DeleteWorkButton from '@/components/DeleteWorkButton'
+import ReorderWorkButtons from '@/components/ReorderWorkButtons'
 
 export default async function AdminDashboard() {
   const supabase = await createClient()
@@ -14,7 +15,9 @@ export default async function AdminDashboard() {
   const { data: works } = await supabase
     .from('works')
     .select('*, author:authors(*), issue:issues(*)')
-    .order('created_at', { ascending: false })
+    .order('position', { ascending: true })
+
+  const workList = (works ?? []) as Work[]
 
   return (
     <main className="flex-1" style={{ background: '#0a0a0a', color: '#fff', minHeight: '100vh' }}>
@@ -61,22 +64,24 @@ export default async function AdminDashboard() {
         </div>
 
         {/* Works table */}
-        {!works || works.length === 0 ? (
+        {workList.length === 0 ? (
           <p style={{ color: 'rgba(255,255,255,0.3)', fontFamily: 'sans-serif', fontSize: 14 }}>No works yet. Add your first one above.</p>
         ) : (
           <div style={{ border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 8, overflow: 'hidden' }}>
             <table className="w-full" style={{ fontSize: 13, borderCollapse: 'collapse' }}>
               <thead style={{ background: 'rgba(255,255,255,0.04)', borderBottom: '0.5px solid rgba(255,255,255,0.1)' }}>
                 <tr>
+                  <th style={{ width: 32, padding: '10px 8px 10px 16px' }} />
                   <th style={{ textAlign: 'left', padding: '10px 16px', fontWeight: 500, color: 'rgba(255,255,255,0.5)', fontFamily: 'sans-serif' }}>Title</th>
                   <th style={{ textAlign: 'left', padding: '10px 16px', fontWeight: 500, color: 'rgba(255,255,255,0.5)', fontFamily: 'sans-serif' }}>Author</th>
                   <th style={{ textAlign: 'left', padding: '10px 16px', fontWeight: 500, color: 'rgba(255,255,255,0.5)', fontFamily: 'sans-serif' }}>Type</th>
+                  <th style={{ textAlign: 'left', padding: '10px 16px', fontWeight: 500, color: 'rgba(255,255,255,0.5)', fontFamily: 'sans-serif' }}>Genre</th>
                   <th style={{ textAlign: 'left', padding: '10px 16px', fontWeight: 500, color: 'rgba(255,255,255,0.5)', fontFamily: 'sans-serif' }}>Issue</th>
                   <th style={{ padding: '10px 16px' }} />
                 </tr>
               </thead>
               <tbody>
-                {(works as Work[]).map((work, i) => (
+                {workList.map((work, i) => (
                   <tr
                     key={work.id}
                     style={{
@@ -84,6 +89,16 @@ export default async function AdminDashboard() {
                     }}
                     className="admin-row"
                   >
+                    <td style={{ padding: '0 8px 0 16px', verticalAlign: 'middle' }}>
+                      <ReorderWorkButtons
+                        workId={work.id}
+                        position={work.position ?? i + 1}
+                        prevId={i > 0 ? workList[i - 1].id : null}
+                        prevPosition={i > 0 ? (workList[i - 1].position ?? i) : null}
+                        nextId={i < workList.length - 1 ? workList[i + 1].id : null}
+                        nextPosition={i < workList.length - 1 ? (workList[i + 1].position ?? i + 2) : null}
+                      />
+                    </td>
                     <td style={{ padding: '12px 16px', color: '#fff', fontFamily: 'sans-serif' }}>
                       <Link href={`/works/${work.id}`} target="_blank" style={{ color: '#fff', textDecoration: 'none' }}
                         className="hover:underline">
@@ -92,6 +107,7 @@ export default async function AdminDashboard() {
                     </td>
                     <td style={{ padding: '12px 16px', color: 'rgba(255,255,255,0.55)', fontFamily: 'sans-serif' }}>{work.author?.name ?? '—'}</td>
                     <td style={{ padding: '12px 16px', color: 'rgba(255,255,255,0.55)', fontFamily: 'sans-serif', textTransform: 'capitalize' }}>{work.media_type}</td>
+                    <td style={{ padding: '12px 16px', color: 'rgba(255,255,255,0.55)', fontFamily: 'sans-serif' }}>{work.genre || '—'}</td>
                     <td style={{ padding: '12px 16px', color: 'rgba(255,255,255,0.55)', fontFamily: 'sans-serif' }}>{work.issue?.semester ?? '—'}</td>
                     <td style={{ padding: '12px 16px', textAlign: 'right' }}>
                       <div className="flex items-center justify-end gap-4">

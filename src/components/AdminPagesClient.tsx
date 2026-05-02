@@ -17,6 +17,44 @@ export default function AdminPagesClient({ issue, initialPages }: Props) {
   const [progress, setProgress] = useState('')
   const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const coverInputRef = useRef<HTMLInputElement>(null)
+  const [coverUrl, setCoverUrl] = useState<string | null>(issue.cover_image_url ?? null)
+  const [coverUploading, setCoverUploading] = useState(false)
+
+  async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setCoverUploading(true)
+    setError(null)
+    try {
+      const ext = file.name.split('.').pop()
+      const path = `covers/${issue.id}-${Date.now()}.${ext}`
+      const { error: uploadError } = await supabase.storage.from('media').upload(path, file)
+      if (uploadError) throw uploadError
+      const { data: urlData } = supabase.storage.from('media').getPublicUrl(path)
+      const { error: updateError } = await supabase
+        .from('issues')
+        .update({ cover_image_url: urlData.publicUrl })
+        .eq('id', issue.id)
+      if (updateError) throw updateError
+      setCoverUrl(urlData.publicUrl)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Cover upload failed')
+    } finally {
+      setCoverUploading(false)
+      if (coverInputRef.current) coverInputRef.current.value = ''
+    }
+  }
+
+  async function handleRemoveCover() {
+    if (!confirm('Remove the cover image? This cannot be undone.')) return
+    const { error: updateError } = await supabase
+      .from('issues')
+      .update({ cover_image_url: null })
+      .eq('id', issue.id)
+    if (updateError) { setError(updateError.message); return }
+    setCoverUrl(null)
+  }
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? [])
@@ -133,6 +171,55 @@ export default function AdminPagesClient({ issue, initialPages }: Props) {
 
   return (
     <div>
+      {/* Cover image */}
+      <div style={{ marginBottom: 32 }}>
+        <p style={{ fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.55)', fontFamily: 'sans-serif', marginBottom: 10, letterSpacing: '0.02em' }}>
+          HERO COVER IMAGE
+        </p>
+        {coverUrl ? (
+          <div style={{ position: 'relative', borderRadius: 8, overflow: 'hidden', marginBottom: 10 }}>
+            <Image
+              src={coverUrl}
+              alt="Cover"
+              width={900}
+              height={280}
+              style={{ width: '100%', height: 200, objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
+            />
+            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, opacity: 0 }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '0')}
+              className="transition-opacity"
+            >
+              <button
+                onClick={() => coverInputRef.current?.click()}
+                style={{ background: 'rgba(255,255,255,0.15)', border: '0.5px solid rgba(255,255,255,0.3)', color: '#fff', borderRadius: 6, padding: '7px 16px', fontSize: 13, fontFamily: 'sans-serif', cursor: 'pointer' }}
+              >
+                Replace
+              </button>
+              <button
+                onClick={handleRemoveCover}
+                style={{ background: 'rgba(192,57,43,0.7)', border: 'none', color: '#fff', borderRadius: 6, padding: '7px 16px', fontSize: 13, fontFamily: 'sans-serif', cursor: 'pointer' }}
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div
+            onClick={() => coverInputRef.current?.click()}
+            style={{ border: '1.5px dashed rgba(255,255,255,0.15)', borderRadius: 8, padding: '24px', textAlign: 'center', cursor: 'pointer' }}
+            onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)')}
+            onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)')}
+          >
+            {coverUploading
+              ? <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', fontFamily: 'sans-serif' }}>Uploading…</p>
+              : <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', fontFamily: 'sans-serif' }}>Click to upload a cover image for the homepage hero</p>
+            }
+          </div>
+        )}
+        <input ref={coverInputRef} type="file" accept="image/*" className="hidden" onChange={handleCoverUpload} disabled={coverUploading} />
+      </div>
+
       {/* Upload area */}
       <div
         onClick={() => fileInputRef.current?.click()}

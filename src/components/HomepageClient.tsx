@@ -41,16 +41,20 @@ export default function HomepageClient({ issue, works }: Props) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #8b0000 0%, #5a0010 30%, #0d1a2e 65%, #081222 100%)',
+        background: issue.cover_image_url
+          ? `url(${issue.cover_image_url}) center top / cover no-repeat`
+          : 'linear-gradient(135deg, #8b0000 0%, #5a0010 30%, #0d1a2e 65%, #081222 100%)',
       }}>
-        {/* Radial overlays */}
+        {/* Dark overlay (always present over cover image; subtle over gradient) */}
         <div style={{
           position: 'absolute',
           inset: 0,
-          background: `
-            radial-gradient(ellipse 60% 80% at 30% 60%, rgba(180,20,20,0.55) 0%, transparent 70%),
-            radial-gradient(ellipse 50% 60% at 70% 30%, rgba(10,40,80,0.8) 0%, transparent 70%)
-          `,
+          background: issue.cover_image_url
+            ? 'rgba(0,0,0,0.55)'
+            : `
+              radial-gradient(ellipse 60% 80% at 30% 60%, rgba(180,20,20,0.55) 0%, transparent 70%),
+              radial-gradient(ellipse 50% 60% at 70% 30%, rgba(10,40,80,0.8) 0%, transparent 70%)
+            `,
         }} />
 
         {/* Title */}
@@ -101,18 +105,26 @@ export default function HomepageClient({ issue, works }: Props) {
       {/* Flipbook link */}
       <div style={{ textAlign: 'center', padding: '12px 32px 0' }}>
         <Link href="/read" style={{
-          fontSize: 12,
-          color: 'rgba(255,255,255,0.35)',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 8,
+          fontSize: 13,
+          fontWeight: 500,
+          color: 'rgba(255,255,255,0.75)',
           fontFamily: 'sans-serif',
-          letterSpacing: 2,
+          letterSpacing: '0.05em',
           textDecoration: 'none',
+          border: '0.5px solid rgba(255,255,255,0.25)',
+          borderRadius: 999,
+          padding: '8px 20px',
+          transition: 'border-color 0.15s, color 0.15s',
         }}>
-          ↳ Flipbook Mode
+          <span style={{ fontSize: 15 }}>⧉</span> Flipbook Mode
         </Link>
       </div>
 
       {/* ── Tab bar ──────────────────────────────────────────────────────── */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 4, padding: '20px 32px 0' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 4, padding: '28px 32px 0' }}>
         {TABS.map((tab) => (
           <button
             key={tab}

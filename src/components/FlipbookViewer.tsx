@@ -45,7 +45,7 @@ export default function FlipbookViewer({ pages, issue, works }: Props) {
     <div className="flex flex-col items-center justify-center min-h-[60vh] bg-black gap-8 px-8 py-12">
 
       {/* Issue title + back link */}
-      <div className="flex flex-col items-center gap-3">
+      <div className="flex flex-col items-center" style={{ gap: 12 }}>
         <p style={{
           fontSize: 'clamp(20px, 3vw, 28px)',
           fontWeight: 700,
@@ -57,13 +57,20 @@ export default function FlipbookViewer({ pages, issue, works }: Props) {
           {issue.semester.toUpperCase()}
         </p>
         <Link href="/" style={{
-          fontSize: 12,
-          color: 'rgba(255,255,255,0.35)',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 8,
+          fontSize: 13,
+          fontWeight: 500,
+          color: 'rgba(255,255,255,0.75)',
           fontFamily: 'sans-serif',
-          letterSpacing: 2,
+          letterSpacing: '0.05em',
           textDecoration: 'none',
+          border: '0.5px solid rgba(255,255,255,0.25)',
+          borderRadius: 999,
+          padding: '8px 20px',
         }}>
-          ↳ Web Mode
+          <span style={{ fontSize: 15 }}>☰</span> Web Mode
         </Link>
       </div>
 

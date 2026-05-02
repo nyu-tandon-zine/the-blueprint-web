@@ -12,6 +12,7 @@ export interface Issue {
   semester: string        // e.g. "Spring 2026"
   published_at: string    // ISO date string
   is_current: boolean     // true for the issue shown on the homepage
+  cover_image_url: string | null
 }
 
 export interface Author {
@@ -37,6 +38,7 @@ export interface Work {
   issue_id: string
   author_id: string
   start_page: number | null       // Page number in the print zine where this work begins
+  position: number | null         // Display order on the homepage listing
   // Joined relations (populated when fetched with select)
   issue?: Issue
   author?: Author

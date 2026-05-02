@@ -26,7 +26,7 @@ async function getWorksForIssue(issueId: string): Promise<Work[]> {
       author:authors(*)
     `)
     .eq('issue_id', issueId)
-    .order('created_at', { ascending: true })
+    .order('position', { ascending: true })
 
   if (error) {
     console.error('Error fetching works:', error)
