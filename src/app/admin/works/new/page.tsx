@@ -520,6 +520,7 @@ export default function NewWorkPage() {
                   issue_id: '',
                   author_id: '',
                   start_page: null,
+                  position: null,
                   author: {
                     id: '',
                     name: authorMode === 'existing'
