@@ -2,8 +2,14 @@
 
 import type { Work } from '@/types'
 import Link from 'next/link'
+import AudioPlayer, { type Track } from './AudioPlayer/Player'
 
 export default function AudioViewer({ work }: { work: Work }) {
+  console.log('tracks:', [{
+    artist: work.author?.name ?? 'Unknown',
+    track: work.title,
+    src: work.media_url,
+  }])
   return (
     <main className="max-w-3xl mx-auto px-8 py-10 w-full">
       {/* Back link */}
@@ -26,13 +32,15 @@ export default function AudioViewer({ work }: { work: Work }) {
 
       {/* Audio player */}
       {work.media_url ? (
-        <audio
-          controls
-          className="w-full mb-8"
-          src={work.media_url}
-        >
-          Your browser does not support the audio element.
-        </audio>
+        <div className="mb-8">
+          <AudioPlayer
+            tracks={[{
+              artist: work.author?.name ?? 'Unknown',
+              track: work.title,
+              src: work.media_url,
+            }]} 
+          />
+        </div>
       ) : (
         <div className="w-full bg-white/5 rounded p-6 flex items-center justify-center mb-8">
           <p className="text-gray-500 text-sm">Audio not yet available</p>
