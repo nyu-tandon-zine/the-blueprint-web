@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase-browser'
+import Image from 'next/image'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -30,14 +31,28 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex-1 flex items-center justify-center bg-white px-8">
+    <main className="flex-1 flex items-center justify-center px-8" style={{ background: '#0a0a0a' }}>
       <div className="w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Admin Login</h1>
-        <p className="text-sm text-gray-500 mb-8">The Blueprint — NYU Tandon Zine</p>
+
+        {/* Logo + title */}
+        <div className="flex items-center gap-3 mb-8">
+          <Image src="/logo.png" alt="The Blueprint" width={28} height={40} style={{ objectFit: 'contain' }} />
+          <div>
+            <p style={{ fontFamily: "'Blue Screen', 'Courier New', monospace", fontSize: 13, letterSpacing: 3, color: '#B6CCFF' }}>
+              The Blueprint
+            </p>
+            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', fontFamily: 'sans-serif', letterSpacing: 1 }}>
+              Admin
+            </p>
+          </div>
+        </div>
+
+        <h1 style={{ fontSize: 22, fontWeight: 600, color: '#fff', marginBottom: 6 }}>Sign in</h1>
+        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 28, fontFamily: 'sans-serif' }}>NYU Tandon Zine</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" style={{ display: 'block', fontSize: 12, color: 'rgba(255,255,255,0.55)', marginBottom: 6, fontFamily: 'sans-serif', letterSpacing: 0.5 }}>
               Email
             </label>
             <input
@@ -46,13 +61,24 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               placeholder="you@nyu.edu"
+              style={{
+                width: '100%',
+                background: 'rgba(255,255,255,0.05)',
+                border: '0.5px solid rgba(255,255,255,0.15)',
+                borderRadius: 6,
+                padding: '10px 12px',
+                fontSize: 14,
+                color: '#fff',
+                outline: 'none',
+                fontFamily: 'sans-serif',
+                boxSizing: 'border-box',
+              }}
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password" style={{ display: 'block', fontSize: 12, color: 'rgba(255,255,255,0.55)', marginBottom: 6, fontFamily: 'sans-serif', letterSpacing: 0.5 }}>
               Password
             </label>
             <input
@@ -61,18 +87,42 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+              style={{
+                width: '100%',
+                background: 'rgba(255,255,255,0.05)',
+                border: '0.5px solid rgba(255,255,255,0.15)',
+                borderRadius: 6,
+                padding: '10px 12px',
+                fontSize: 14,
+                color: '#fff',
+                outline: 'none',
+                fontFamily: 'sans-serif',
+                boxSizing: 'border-box',
+              }}
             />
           </div>
 
           {error && (
-            <p className="text-sm text-red-600">{error}</p>
+            <p style={{ fontSize: 13, color: '#ff6b6b', fontFamily: 'sans-serif' }}>{error}</p>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gray-900 text-white py-2 rounded text-sm font-medium hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              width: '100%',
+              background: '#c0392b',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 6,
+              padding: '10px',
+              fontSize: 14,
+              fontWeight: 500,
+              cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.6 : 1,
+              fontFamily: 'sans-serif',
+              marginTop: 4,
+            }}
           >
             {loading ? 'Signing in…' : 'Sign in'}
           </button>

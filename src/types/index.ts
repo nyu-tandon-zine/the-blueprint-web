@@ -41,6 +41,7 @@ export interface Work {
   issue?: Issue
   author?: Author
   work_images?: WorkImage[]
+  work_audio_files?: WorkAudioFile[]
 }
 
 export interface Page {
@@ -55,6 +56,15 @@ export interface WorkImage {
   id: string
   work_id: string
   image_url: string
+  position: number
+  created_at: string
+}
+
+export interface WorkAudioFile {
+  id: string
+  work_id: string
+  audio_url: string
+  track_title: string
   position: number
   created_at: string
 }

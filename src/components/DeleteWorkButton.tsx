@@ -29,7 +29,15 @@ export default function DeleteWorkButton({
   return (
     <button
       onClick={handleDelete}
-      className="text-red-400 hover:text-red-600 transition-colors"
+      style={{
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        fontSize: 13,
+        color: 'rgba(220,60,60,0.7)',
+        fontFamily: 'sans-serif',
+        padding: 0,
+      }}
     >
       Delete
     </button>

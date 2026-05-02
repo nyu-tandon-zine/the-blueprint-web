@@ -17,7 +17,8 @@ async function getWork(id: string): Promise<Work | null> {
       *,
       author:authors(*),
       issue:issues(*),
-      work_images(*)
+      work_images(*),
+      work_audio_files(*)
     `)
     .eq('id', id)
     .single()

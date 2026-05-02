@@ -34,7 +34,7 @@ export default function NewWorkPage() {
   const [externalLink, setExternalLink] = useState('')
   const [issueId, setIssueId] = useState('')
   const [files, setFiles] = useState<File[]>([])
-  const [file, setFile] = useState<File | null>(null)
+  const [newAudioFiles, setNewAudioFiles] = useState<{ file: File; title: string }[]>([])
 
   // Author state — pick existing or create new
   const [authorMode, setAuthorMode] = useState<'existing' | 'new'>('new')
@@ -95,22 +95,7 @@ export default function NewWorkPage() {
         resolvedAuthorId = data.id
       }
 
-      // Step 2: upload single audio file if present
-      let mediaUrl: string | null = null
-      if (mediaType === 'audio' && file) {
-        setUploadProgress('Uploading file…')
-        const ext = file.name.split('.').pop()
-        const path = `audio/${Date.now()}.${ext}`
-        const { error: uploadError } = await supabase.storage
-          .from('media')
-          .upload(path, file)
-        if (uploadError) throw uploadError
-        const { data: urlData } = supabase.storage.from('media').getPublicUrl(path)
-        mediaUrl = urlData.publicUrl
-        setUploadProgress('')
-      }
-
-      // Step 3: insert the work
+      // Step 2: insert the work (audio tracks go into work_audio_files, not media_url)
       const { data: newWork, error: workError } = await supabase.from('works').insert({
         title: title.trim(),
         media_type: mediaType,
@@ -118,12 +103,33 @@ export default function NewWorkPage() {
         description: description.trim() || null,
         content: content.trim() || null,
         works_cited: worksCited.trim() || null,
-        media_url: mediaUrl,
+        media_url: null,
         external_link: externalLink.trim() || null,
         issue_id: issueId,
         author_id: resolvedAuthorId,
       }).select('id').single()
       if (workError) throw workError
+
+      // Step 3b: upload audio tracks into work_audio_files
+      if (mediaType === 'audio' && newAudioFiles.length > 0) {
+        for (let i = 0; i < newAudioFiles.length; i++) {
+          setUploadProgress(`Uploading track ${i + 1} of ${newAudioFiles.length}…`)
+          const { file, title } = newAudioFiles[i]
+          const ext = file.name.split('.').pop()
+          const path = `audio/${Date.now()}-${i}.${ext}`
+          const { error: uploadError } = await supabase.storage.from('media').upload(path, file)
+          if (uploadError) throw uploadError
+          const { data: urlData } = supabase.storage.from('media').getPublicUrl(path)
+          const { error: insertError } = await supabase.from('work_audio_files').insert({
+            work_id: newWork.id,
+            audio_url: urlData.publicUrl,
+            track_title: title,
+            position: i + 1,
+          })
+          if (insertError) throw insertError
+        }
+        setUploadProgress('')
+      }
 
       // Step 4: upload images for visual-art
       if (mediaType === 'visual-art' && files.length > 0) {
@@ -158,11 +164,11 @@ export default function NewWorkPage() {
   const needsExternalLink = mediaType === 'film' || mediaType === 'game' || mediaType === 'audio'
 
   return (
-    <main className="flex-1 bg-white">
+    <main style={{ flex: 1, background: '#0a0a0a', color: '#fff', minHeight: '100vh' }}>
       <div className="max-w-2xl mx-auto px-8 py-10">
         <div className="flex items-center gap-4 mb-8">
-          <Link href="/admin" className="text-gray-400 hover:text-gray-700 transition-colors">←</Link>
-          <h1 className="text-2xl font-bold text-gray-900">Add New Work</h1>
+          <Link href="/admin" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontSize: 18 }}>←</Link>
+          <h1 style={{ fontSize: 22, fontWeight: 600, color: '#fff' }}>Add New Work</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -172,7 +178,7 @@ export default function NewWorkPage() {
             <select
               value={mediaType}
               onChange={(e) => setMediaType(e.target.value as MediaType)}
-              className={inputClass}
+              style={selectStyle}
             >
               {MEDIA_TYPES.map(({ value, label }) => (
                 <option key={value} value={value}>{label}</option>
@@ -187,7 +193,7 @@ export default function NewWorkPage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
-              className={inputClass}
+              style={inputStyle}
               placeholder="Title of the work"
             />
           </Field>
@@ -198,7 +204,7 @@ export default function NewWorkPage() {
               type="text"
               value={genre}
               onChange={(e) => setGenre(e.target.value)}
-              className={inputClass}
+              style={inputStyle}
               placeholder="e.g. fiction, nonfiction, fashion, photography"
             />
           </Field>
@@ -209,7 +215,7 @@ export default function NewWorkPage() {
               value={issueId}
               onChange={(e) => setIssueId(e.target.value)}
               required
-              className={inputClass}
+              style={selectStyle}
             >
               {issues.map((issue) => (
                 <option key={issue.id} value={issue.id}>{issue.semester}</option>
@@ -219,15 +225,16 @@ export default function NewWorkPage() {
 
           {/* Author */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Author</label>
+            <label style={labelStyle}>Author</label>
             <div className="flex gap-4 mb-3">
               {(['new', 'existing'] as const).map((mode) => (
-                <label key={mode} className="flex items-center gap-2 text-sm cursor-pointer">
+                <label key={mode} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, cursor: 'pointer', color: 'rgba(255,255,255,0.65)', fontFamily: 'sans-serif' }}>
                   <input
                     type="radio"
                     value={mode}
                     checked={authorMode === mode}
                     onChange={() => setAuthorMode(mode)}
+                    style={{ accentColor: '#c0392b' }}
                   />
                   {mode === 'new' ? 'New author' : 'Existing author'}
                 </label>
@@ -239,7 +246,7 @@ export default function NewWorkPage() {
                 value={authorId}
                 onChange={(e) => setAuthorId(e.target.value)}
                 required
-                className={inputClass}
+                style={selectStyle}
               >
                 <option value="">Select an author…</option>
                 {authors.map((a) => (
@@ -254,21 +261,21 @@ export default function NewWorkPage() {
                   onChange={(e) => setAuthorName(e.target.value)}
                   placeholder="Full name"
                   required
-                  className={inputClass}
+                  style={inputStyle}
                 />
                 <input
                   type="email"
                   value={authorEmail}
                   onChange={(e) => setAuthorEmail(e.target.value)}
                   placeholder="Email (optional)"
-                  className={inputClass}
+                  style={inputStyle}
                 />
                 <textarea
                   value={authorBio}
                   onChange={(e) => setAuthorBio(e.target.value)}
                   placeholder="Bio (optional)"
                   rows={3}
-                  className={inputClass}
+                  style={inputStyle}
                 />
                 <div className="grid grid-cols-2 gap-3">
                   <input
@@ -276,7 +283,7 @@ export default function NewWorkPage() {
                     value={authorMajor}
                     onChange={(e) => setAuthorMajor(e.target.value)}
                     placeholder="Major (optional)"
-                    className={inputClass}
+                    style={inputStyle}
                   />
                   <input
                     type="number"
@@ -285,7 +292,7 @@ export default function NewWorkPage() {
                     placeholder="Grad year (optional)"
                     min={2020}
                     max={2040}
-                    className={inputClass}
+                    style={inputStyle}
                   />
                 </div>
               </div>
@@ -298,7 +305,7 @@ export default function NewWorkPage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className={inputClass}
+              style={inputStyle}
               placeholder="Short description or blurb"
             />
           </Field>
@@ -310,7 +317,7 @@ export default function NewWorkPage() {
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 rows={16}
-                className={`${inputClass} ${mediaType === 'poetry' ? 'font-mono' : ''}`}
+                style={{ ...inputStyle, fontFamily: mediaType === 'poetry' ? 'monospace' : 'sans-serif' }}
                 placeholder={
                   mediaType === 'poetry'
                     ? 'Paste poem here. Line breaks and indentation will be preserved exactly.'
@@ -327,7 +334,7 @@ export default function NewWorkPage() {
                 value={worksCited}
                 onChange={(e) => setWorksCited(e.target.value)}
                 rows={4}
-                className={inputClass}
+                style={inputStyle}
                 placeholder="One citation per line"
               />
             </Field>
@@ -341,29 +348,80 @@ export default function NewWorkPage() {
                 accept="image/*"
                 multiple
                 onChange={(e) => setFiles(Array.from(e.target.files ?? []))}
-                className="text-sm text-gray-600"
+                style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: 'sans-serif' }}
               />
               {files.length > 0 && (
-                <p className="text-xs text-gray-400 mt-1">{files.length} image{files.length > 1 ? 's' : ''} selected</p>
+                <p style={hintStyle}>{files.length} image{files.length > 1 ? 's' : ''} selected</p>
               )}
               {uploadProgress && (
-                <p className="text-xs text-gray-400 mt-1">{uploadProgress}</p>
+                <p style={hintStyle}>{uploadProgress}</p>
               )}
             </Field>
           )}
 
-          {/* File upload — audio (single) */}
+          {/* File upload — audio (multi-track) */}
           {mediaType === 'audio' && (
-            <Field label="Audio file">
+            <Field label="Audio tracks">
               <input
                 type="file"
-                accept="audio/*"
-                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-                className="text-sm text-gray-600"
+                accept="audio/*,video/mp4"
+                multiple
+                onChange={(e) => {
+                  const picked = Array.from(e.target.files ?? [])
+                  setNewAudioFiles(picked.map((f) => ({ file: f, title: f.name.replace(/\.[^/.]+$/, '') })))
+                }}
+                style={{ fontSize: 13, color: 'rgba(255,255,255,0.55)', fontFamily: 'sans-serif', marginBottom: 8 }}
               />
-              {uploadProgress && (
-                <p className="text-xs text-gray-400 mt-1">{uploadProgress}</p>
+              {newAudioFiles.length > 0 && (
+                <div style={{ marginTop: 8 }}>
+                  <p style={{ ...hintStyle, fontWeight: 500, marginBottom: 6 }}>Edit track titles:</p>
+                  {newAudioFiles.map((af, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, background: 'rgba(255,255,255,0.04)', borderRadius: 5, padding: '5px 8px' }}>
+                      {/* Reorder buttons */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 1, marginRight: 2 }}>
+                        <button
+                          type="button"
+                          onClick={() => setNewAudioFiles((prev) => {
+                            if (i === 0) return prev
+                            const next = [...prev]
+                            ;[next[i - 1], next[i]] = [next[i], next[i - 1]]
+                            return next
+                          })}
+                          disabled={i === 0}
+                          style={{ background: 'none', border: 'none', cursor: i === 0 ? 'default' : 'pointer', color: i === 0 ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.45)', fontSize: 9, padding: 0, lineHeight: 1 }}
+                          title="Move up"
+                        >▲</button>
+                        <button
+                          type="button"
+                          onClick={() => setNewAudioFiles((prev) => {
+                            if (i === prev.length - 1) return prev
+                            const next = [...prev]
+                            ;[next[i], next[i + 1]] = [next[i + 1], next[i]]
+                            return next
+                          })}
+                          disabled={i === newAudioFiles.length - 1}
+                          style={{ background: 'none', border: 'none', cursor: i === newAudioFiles.length - 1 ? 'default' : 'pointer', color: i === newAudioFiles.length - 1 ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.45)', fontSize: 9, padding: 0, lineHeight: 1 }}
+                          title="Move down"
+                        >▼</button>
+                      </div>
+                      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', fontFamily: 'sans-serif', width: 16 }}>{i + 1}.</span>
+                      <input
+                        type="text"
+                        value={af.title}
+                        onChange={(e) => setNewAudioFiles((prev) => prev.map((x, j) => j === i ? { ...x, title: e.target.value } : x))}
+                        style={{ ...inputStyle, fontSize: 12, padding: '4px 10px' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setNewAudioFiles((prev) => prev.filter((_, j) => j !== i))}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(192,57,43,0.7)', fontSize: 14, padding: '0 2px', lineHeight: 1 }}
+                        title="Remove track"
+                      >×</button>
+                    </div>
+                  ))}
+                </div>
               )}
+              {uploadProgress && <p style={hintStyle}>{uploadProgress}</p>}
             </Field>
           )}
 
@@ -379,19 +437,30 @@ export default function NewWorkPage() {
                 value={externalLink}
                 onChange={(e) => setExternalLink(e.target.value)}
                 required={mediaType === 'film' || mediaType === 'game'}
-                className={inputClass}
+                style={inputStyle}
                 placeholder="https://"
               />
             </Field>
           )}
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p style={{ fontSize: 13, color: '#ff6b6b', fontFamily: 'sans-serif' }}>{error}</p>}
 
           <div className="flex gap-4 pt-2">
             <button
               type="submit"
               disabled={loading}
-              className="bg-gray-900 text-white px-6 py-2 rounded text-sm font-medium hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                background: '#c0392b',
+                color: '#fff',
+                border: 'none',
+                padding: '8px 20px',
+                borderRadius: 6,
+                fontSize: 13,
+                fontWeight: 500,
+                fontFamily: 'sans-serif',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                opacity: loading ? 0.5 : 1,
+              }}
             >
               {loading ? 'Saving…' : 'Add Work'}
             </button>
@@ -399,14 +468,30 @@ export default function NewWorkPage() {
               <button
                 type="button"
                 onClick={() => setShowPreview((v) => !v)}
-                className="px-6 py-2 rounded text-sm font-medium border border-gray-300 text-gray-600 hover:border-gray-500 transition-colors"
+                style={{
+                  background: 'none',
+                  border: '0.5px solid rgba(255,255,255,0.2)',
+                  color: 'rgba(255,255,255,0.65)',
+                  padding: '8px 20px',
+                  borderRadius: 6,
+                  fontSize: 13,
+                  fontFamily: 'sans-serif',
+                  cursor: 'pointer',
+                }}
               >
                 {showPreview ? 'Hide Preview' : 'Preview'}
               </button>
             )}
             <Link
               href="/admin"
-              className="px-6 py-2 rounded text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors"
+              style={{
+                padding: '8px 20px',
+                borderRadius: 6,
+                fontSize: 13,
+                fontFamily: 'sans-serif',
+                color: 'rgba(255,255,255,0.4)',
+                textDecoration: 'none',
+              }}
             >
               Cancel
             </Link>
@@ -415,11 +500,11 @@ export default function NewWorkPage() {
 
         {/* Live preview */}
         {showPreview && needsContent && (
-          <div className="mt-10 border-t border-gray-200 pt-8">
-            <p className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-6">
+          <div style={{ marginTop: 40, borderTop: '0.5px solid rgba(255,255,255,0.1)', paddingTop: 32 }}>
+            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontFamily: 'sans-serif', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 24 }}>
               Live Preview
             </p>
-            <div className="border border-gray-200 rounded-lg p-8 bg-white">
+            <div style={{ border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: 32, background: 'rgba(255,255,255,0.03)' }}>
               <ArticleHeader
                 work={{
                   id: '',
@@ -454,7 +539,7 @@ export default function NewWorkPage() {
                   <ProseBody content={content} />
                 )
               ) : (
-                <p className="text-gray-300 italic text-sm">
+                <p style={{ color: 'rgba(255,255,255,0.25)', fontStyle: 'italic', fontSize: 13, fontFamily: 'sans-serif' }}>
                   Start typing or paste content above to see the preview...
                 </p>
               )}
@@ -467,14 +552,46 @@ export default function NewWorkPage() {
   )
 }
 
-// Small helper components to reduce repetition
-const inputClass =
-  'w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent'
+// Shared styles
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  background: 'rgba(255,255,255,0.05)',
+  border: '0.5px solid rgba(255,255,255,0.15)',
+  borderRadius: 6,
+  padding: '8px 12px',
+  fontSize: 13,
+  color: '#fff',
+  fontFamily: 'sans-serif',
+  outline: 'none',
+  boxSizing: 'border-box',
+}
+
+const selectStyle: React.CSSProperties = {
+  ...inputStyle,
+  cursor: 'pointer',
+}
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontSize: 12,
+  fontWeight: 500,
+  color: 'rgba(255,255,255,0.55)',
+  fontFamily: 'sans-serif',
+  marginBottom: 6,
+  letterSpacing: '0.02em',
+}
+
+const hintStyle: React.CSSProperties = {
+  fontSize: 12,
+  color: 'rgba(255,255,255,0.35)',
+  fontFamily: 'sans-serif',
+  marginTop: 4,
+}
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <label style={labelStyle}>{label}</label>
       {children}
     </div>
   )

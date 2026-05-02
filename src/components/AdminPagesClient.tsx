@@ -135,8 +135,18 @@ export default function AdminPagesClient({ issue, initialPages }: Props) {
     <div>
       {/* Upload area */}
       <div
-        className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center mb-8 cursor-pointer hover:border-gray-400 transition-colors"
         onClick={() => fileInputRef.current?.click()}
+        style={{
+          border: '1.5px dashed rgba(255,255,255,0.15)',
+          borderRadius: 8,
+          padding: '32px',
+          textAlign: 'center',
+          marginBottom: 32,
+          cursor: 'pointer',
+          transition: 'border-color 0.15s',
+        }}
+        onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)')}
+        onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)')}
       >
         <input
           ref={fileInputRef}
@@ -148,30 +158,34 @@ export default function AdminPagesClient({ issue, initialPages }: Props) {
           disabled={uploading}
         />
         {uploading ? (
-          <p className="text-sm text-gray-500">{progress}</p>
+          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', fontFamily: 'sans-serif' }}>{progress}</p>
         ) : (
           <>
-            <p className="text-sm font-medium text-gray-700 mb-1">Click to upload pages</p>
-            <p className="text-xs text-gray-400">
-              Select multiple images — they'll be sorted by filename and appended after page {pages.length > 0 ? Math.max(...pages.map(p => p.page_number)) : 0}
+            <p style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.8)', fontFamily: 'sans-serif', marginBottom: 4 }}>
+              Click to upload pages
+            </p>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', fontFamily: 'sans-serif' }}>
+              Select multiple images — sorted by filename, appended after page {pages.length > 0 ? Math.max(...pages.map(p => p.page_number)) : 0}
             </p>
           </>
         )}
       </div>
 
       {error && (
-        <p className="text-sm text-red-600 mb-4">{error}</p>
+        <p style={{ fontSize: 13, color: '#ff6b6b', fontFamily: 'sans-serif', marginBottom: 16 }}>{error}</p>
       )}
 
       {/* Page grid */}
       {pages.length === 0 ? (
-        <p className="text-sm text-gray-400 text-center py-12">No pages yet. Upload some above.</p>
+        <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', fontFamily: 'sans-serif', textAlign: 'center', padding: '48px 0' }}>
+          No pages yet. Upload some above.
+        </p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {pages.map((page) => (
             <div key={page.id} className="group relative">
               {/* Thumbnail */}
-              <div className="relative aspect-[85/110] bg-gray-100 rounded overflow-hidden">
+              <div className="relative aspect-[85/110] rounded overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
                 <Image
                   src={page.image_url}
                   alt={`Page ${page.page_number}`}
@@ -181,7 +195,8 @@ export default function AdminPagesClient({ issue, initialPages }: Props) {
                 {/* Delete button */}
                 <button
                   onClick={() => handleDelete(page)}
-                  className="absolute top-1.5 right-1.5 bg-red-600 text-white rounded text-xs w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute top-1.5 right-1.5 rounded text-xs w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  style={{ background: 'rgba(192,57,43,0.9)', color: '#fff', border: 'none', cursor: 'pointer' }}
                   title="Delete page"
                 >
                   ×
@@ -190,7 +205,7 @@ export default function AdminPagesClient({ issue, initialPages }: Props) {
 
               {/* Page number — editable */}
               <div className="mt-1.5 flex items-center gap-1">
-                <span className="text-xs text-gray-400">p.</span>
+                <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontFamily: 'sans-serif' }}>p.</span>
                 <input
                   type="number"
                   defaultValue={page.page_number}
@@ -199,7 +214,19 @@ export default function AdminPagesClient({ issue, initialPages }: Props) {
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') (e.target as HTMLInputElement).blur()
                   }}
-                  className="w-12 text-xs text-gray-700 border border-transparent hover:border-gray-300 focus:border-gray-400 rounded px-1 py-0.5 focus:outline-none"
+                  style={{
+                    width: 44,
+                    fontSize: 11,
+                    color: 'rgba(255,255,255,0.7)',
+                    background: 'transparent',
+                    border: '0.5px solid transparent',
+                    borderRadius: 4,
+                    padding: '2px 4px',
+                    outline: 'none',
+                    fontFamily: 'sans-serif',
+                  }}
+                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)')}
+                  onBlurCapture={e => (e.currentTarget.style.borderColor = 'transparent')}
                 />
               </div>
             </div>

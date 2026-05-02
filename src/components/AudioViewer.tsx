@@ -2,14 +2,25 @@
 
 import type { Work } from '@/types'
 import Link from 'next/link'
-import AudioPlayer, { type Track } from './AudioPlayer/Player'
+import AudioPlayer from './AudioPlayer/Player'
 
 export default function AudioViewer({ work }: { work: Work }) {
-  console.log('tracks:', [{
-    artist: work.author?.name ?? 'Unknown',
-    track: work.title,
-    src: work.media_url,
-  }])
+  const author = work.author?.name ?? 'Unknown'
+
+  // Build track list — prefer work_audio_files, fall back to single media_url
+  const tracks = (() => {
+    const files = work.work_audio_files ?? []
+    if (files.length > 0) {
+      return files
+        .sort((a, b) => a.position - b.position)
+        .map((f) => ({ artist: author, track: f.track_title, src: f.audio_url }))
+    }
+    if (work.media_url) {
+      return [{ artist: author, track: work.title, src: work.media_url }]
+    }
+    return []
+  })()
+
   return (
     <main className="max-w-3xl mx-auto px-8 py-10 w-full">
       {/* Back link */}
@@ -31,15 +42,9 @@ export default function AudioViewer({ work }: { work: Work }) {
       <p className="text-lg text-gray-400 mb-8">By {work.author?.name}</p>
 
       {/* Audio player */}
-      {work.media_url ? (
+      {tracks.length > 0 ? (
         <div className="mb-8">
-          <AudioPlayer
-            tracks={[{
-              artist: work.author?.name ?? 'Unknown',
-              track: work.title,
-              src: work.media_url,
-            }]} 
-          />
+          <AudioPlayer tracks={tracks} />
         </div>
       ) : (
         <div className="w-full bg-white/5 rounded p-6 flex items-center justify-center mb-8">

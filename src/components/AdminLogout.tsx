@@ -16,7 +16,15 @@ export default function AdminLogout() {
   return (
     <button
       onClick={handleLogout}
-      className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+      style={{
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        fontSize: 13,
+        color: 'rgba(255,255,255,0.35)',
+        fontFamily: 'sans-serif',
+        padding: 0,
+      }}
     >
       Log out
     </button>

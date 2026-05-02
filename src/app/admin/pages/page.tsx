@@ -30,29 +30,41 @@ export default async function AdminPagesPage() {
   })() : []
 
   return (
-    <main className="flex-1 bg-white">
+    <main className="flex-1" style={{ background: '#0a0a0a', color: '#fff', minHeight: '100vh' }}>
       <div className="max-w-5xl mx-auto px-8 py-10">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <Link href="/admin" className="text-gray-400 hover:text-gray-700 transition-colors">←</Link>
+            <Link href="/admin" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontSize: 18 }}>←</Link>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Flipbook Pages</h1>
+              <h1 style={{ fontSize: 22, fontWeight: 600, color: '#fff', marginBottom: 2 }}>Flipbook Pages</h1>
               {issue && (
-                <p className="text-sm text-gray-500 mt-0.5">{issue.semester} — {pages.length} page{pages.length !== 1 ? 's' : ''}</p>
+                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', fontFamily: 'sans-serif' }}>
+                  {issue.semester} — {pages.length} page{pages.length !== 1 ? 's' : ''}
+                </p>
               )}
             </div>
           </div>
           <Link
             href="/read"
             target="_blank"
-            className="text-sm text-gray-500 hover:text-gray-900 transition-colors border border-gray-200 rounded px-3 py-1.5"
+            style={{
+              fontSize: 13,
+              color: 'rgba(255,255,255,0.5)',
+              fontFamily: 'sans-serif',
+              textDecoration: 'none',
+              border: '0.5px solid rgba(255,255,255,0.15)',
+              borderRadius: 6,
+              padding: '6px 12px',
+            }}
           >
             Preview flipbook ↗
           </Link>
         </div>
 
         {!issue ? (
-          <p className="text-gray-400 text-sm">No current issue found. Set an issue as current in Supabase first.</p>
+          <p style={{ color: 'rgba(255,255,255,0.3)', fontFamily: 'sans-serif', fontSize: 14 }}>
+            No current issue found. Set an issue as current in Supabase first.
+          </p>
         ) : (
           <AdminPagesClient issue={issue} initialPages={pages} />
         )}
