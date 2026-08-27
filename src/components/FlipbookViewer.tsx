@@ -14,24 +14,33 @@ interface Props {
 
 export default function FlipbookViewer({ pages, issue, works }: Props) {
   const searchParams = useSearchParams()
-  const totalSpreads = Math.ceil(pages.length / 2)
+
+  // Page 1 (the cover) is shown ALONE, then interior pages pair as real
+  // spreads: (2,3), (4,5), … This keeps facing pages that belong together
+  // actually together. Spread 0 = cover; spread s>=1 = pages[2s-1], pages[2s].
+  const total = pages.length
+  const totalSpreads = total === 0 ? 0 : 1 + Math.ceil((total - 1) / 2)
+
+  // Which spread does a given page number live on?
+  const spreadForPage = (pageNumber: number) =>
+    pageNumber <= 1 ? 0 : Math.floor(pageNumber / 2)
 
   // Initialise spread from ?work= param if present
   const initialSpread = (() => {
     const workId = searchParams.get('work')
     if (workId) {
       const match = works.find((w) => w.id === workId)
-      if (match?.start_page != null) {
-        return Math.floor((match.start_page - 1) / 2)
-      }
+      if (match?.start_page != null) return spreadForPage(match.start_page)
     }
     return 0
   })()
 
   const [spread, setSpread] = useState(initialSpread)
 
-  const leftPage = pages[spread * 2]
-  const rightPage = pages[spread * 2 + 1]
+  const isCover = spread === 0
+  const coverPage = isCover ? pages[0] : null
+  const leftPage = isCover ? null : pages[spread * 2 - 1]
+  const rightPage = isCover ? null : pages[spread * 2]
 
   if (pages.length === 0) {
     return (
@@ -74,14 +83,14 @@ export default function FlipbookViewer({ pages, issue, works }: Props) {
         </Link>
       </div>
 
-      {/* Jump-to dropdown — only shown if any works have start_page set */}
+      {/* Jump-to dropdown */}
       {works.length > 0 && (
         <select
           value=""
           onChange={(e) => {
             const work = works.find((w) => w.id === e.target.value)
             if (work?.start_page != null) {
-              setSpread(Math.floor((work.start_page - 1) / 2))
+              setSpread(spreadForPage(work.start_page))
             }
           }}
           style={{
@@ -106,7 +115,7 @@ export default function FlipbookViewer({ pages, issue, works }: Props) {
         </select>
       )}
 
-      {/* Arrows + two-page spread */}
+      {/* Arrows + page spread */}
       <div className="flex items-center gap-6 w-full max-w-5xl">
 
         {/* Left arrow */}
@@ -118,36 +127,49 @@ export default function FlipbookViewer({ pages, issue, works }: Props) {
           ←
         </button>
 
-        {/* Pages */}
-        <div className="flex flex-1 shadow-2xl">
-
-          {/* Left page */}
-          <div className="relative w-1/2 aspect-[85/110] bg-[#F8F1E2]">
-            {leftPage && (
-              <Image
-                src={leftPage.image_url}
-                alt={`Page ${leftPage.page_number}`}
-                fill
-                className="object-cover"
-              />
-            )}
+        {/* Pages — cover shows alone, interior pages show as a two-page spread */}
+        {isCover ? (
+          <div className="flex flex-1 justify-center shadow-2xl">
+            <div className="relative w-1/2 aspect-[85/110] bg-[#F8F1E2]">
+              {coverPage && (
+                <Image
+                  src={coverPage.image_url}
+                  alt={`Page ${coverPage.page_number}`}
+                  fill
+                  className="object-cover"
+                />
+              )}
+            </div>
           </div>
+        ) : (
+          <div className="flex flex-1 shadow-2xl">
+            {/* Left page */}
+            <div className="relative w-1/2 aspect-[85/110] bg-[#F8F1E2]">
+              {leftPage && (
+                <Image
+                  src={leftPage.image_url}
+                  alt={`Page ${leftPage.page_number}`}
+                  fill
+                  className="object-cover"
+                />
+              )}
+            </div>
 
-          {/* Right page */}
-          <div className="relative w-1/2 aspect-[85/110] bg-[#F8F1E2]">
-            {rightPage ? (
-              <Image
-                src={rightPage.image_url}
-                alt={`Page ${rightPage.page_number}`}
-                fill
-                className="object-cover"
-              />
-            ) : (
-              <div className="w-full h-full bg-[#F8F1E2]" />
-            )}
+            {/* Right page */}
+            <div className="relative w-1/2 aspect-[85/110] bg-[#F8F1E2]">
+              {rightPage ? (
+                <Image
+                  src={rightPage.image_url}
+                  alt={`Page ${rightPage.page_number}`}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-[#F8F1E2]" />
+              )}
+            </div>
           </div>
-
-        </div>
+        )}
 
         {/* Right arrow */}
         <button

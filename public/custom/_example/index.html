@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Custom Page — Reference Example</title>
+
+<!--
+  ════════════════════════════════════════════════════════════════
+  THE BLUEPRINT — REFERENCE CUSTOM PAGE
+  A complete, working example. Read it to see the patterns, then
+  build your own from custom-page-starter/ (don't edit this one).
+
+  Demonstrates:
+   • A bespoke layout + type treatment
+   • A light interactive element (an interactive canvas — vanilla JS,
+     no external library needed)
+   • Reading real work content via onWorkData()
+   • Reporting height back to the site so the frame fits
+   • Sensible fallback content so it also looks right when opened
+     directly at /custom/_example/index.html
+  ════════════════════════════════════════════════════════════════
+-->
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #05040f; color: #fff; overflow-x: hidden; }
+  body { font-family: 'Georgia', serif; }
+
+  .stage { position: relative; min-height: 60vh; display: flex; align-items: center;
+           justify-content: center; overflow: hidden; }
+  #bg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .hero { position: relative; text-align: center; padding: 96px 24px; }
+  .genre { font-family: ui-monospace, monospace; text-transform: uppercase;
+           letter-spacing: 0.35em; font-size: 12px; color: #7aa2ff; margin-bottom: 20px; }
+  .title { font-size: clamp(40px, 8vw, 88px); font-weight: 400; line-height: 1.05;
+           text-shadow: 0 0 40px rgba(122,162,255,0.4); }
+  .author { margin-top: 18px; font-style: italic; color: rgba(255,255,255,0.65);
+            font-size: 18px; }
+  .scroll-hint { margin-top: 40px; font-family: ui-monospace, monospace; font-size: 11px;
+                 letter-spacing: 0.2em; color: rgba(255,255,255,0.35); }
+
+  .body-wrap { max-width: 640px; margin: 0 auto; padding: 40px 24px 96px; }
+  .rule { width: 48px; height: 2px; background: #7aa2ff; margin: 0 auto 48px; }
+  .body { font-size: 18px; line-height: 1.9; color: rgba(255,255,255,0.88); }
+  .body p { margin-bottom: 1.4em; }
+  .body p:first-letter { }
+  .body .lead:first-letter { float: left; font-size: 64px; line-height: 0.8;
+           padding: 6px 10px 0 0; color: #7aa2ff; font-weight: 700; }
+</style>
+</head>
+
+<body>
+  <section class="stage">
+    <canvas id="bg" aria-hidden="true"></canvas>
+    <div class="hero">
+      <div class="genre" id="genre">poetry</div>
+      <h1 class="title" id="title">The Weight of Light</h1>
+      <div class="author" id="author">By Sample Author</div>
+      <div class="scroll-hint">move your cursor · scroll down</div>
+    </div>
+  </section>
+
+  <div class="body-wrap">
+    <div class="rule"></div>
+    <div class="body" id="body">
+      <p class="lead">This is placeholder text shown when the page is opened on its own. Inside the site, it is replaced with the real work content delivered by the page shell.</p>
+      <p>Each paragraph you store in the work’s content appears here, separated exactly where you left a blank line.</p>
+    </div>
+  </div>
+
+  <script>
+    /* ---- Interactive background: drifting points that lean toward the cursor.
+       Pure vanilla JS, so there is no external dependency to approve. ---- */
+    (function () {
+      var canvas = document.getElementById('bg');
+      var ctx = canvas.getContext('2d');
+      var pts = [], W = 0, H = 0, mouse = { x: -999, y: -999 };
+
+      function resize() {
+        W = canvas.width = canvas.offsetWidth;
+        H = canvas.height = canvas.offsetHeight;
+        var count = Math.round((W * H) / 14000);
+        pts = [];
+        for (var i = 0; i < count; i++) {
+          pts.push({ x: Math.random() * W, y: Math.random() * H,
+                     vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3 });
+        }
+      }
+      function tick() {
+        ctx.clearRect(0, 0, W, H);
+        for (var i = 0; i < pts.length; i++) {
+          var p = pts[i];
+          var dx = mouse.x - p.x, dy = mouse.y - p.y;
+          var d = Math.sqrt(dx * dx + dy * dy);
+          if (d < 140 && d > 0) { p.x += (dx / d) * 0.4; p.y += (dy / d) * 0.4; }
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < 0 || p.x > W) p.vx *= -1;
+          if (p.y < 0 || p.y > H) p.vy *= -1;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 1.4, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(122,162,255,0.55)';
+          ctx.fill();
+        }
+        requestAnimationFrame(tick);
+      }
+      window.addEventListener('resize', resize);
+      window.addEventListener('mousemove', function (e) {
+        var r = canvas.getBoundingClientRect();
+        mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
+      });
+      resize(); tick();
+    })();
+
+    /* ---- Populate real content from the site ---- */
+    window.onWorkData = function (work) {
+      if (work.genre) document.getElementById('genre').textContent = work.genre;
+      if (work.title) document.getElementById('title').textContent = work.title;
+      document.getElementById('author').textContent =
+        work.author && work.author.name ? 'By ' + work.author.name : '';
+      if (work.content) {
+        var body = document.getElementById('body');
+        body.innerHTML = '';
+        work.content.split('\n\n').forEach(function (para, i) {
+          if (!para.trim()) return;
+          var p = document.createElement('p');
+          if (i === 0) p.className = 'lead';
+          p.textContent = para;
+          body.appendChild(p);
+        });
+      }
+    };
+
+    /* ════════ Blueprint boilerplate — do not edit ════════ */
+    (function () {
+      function reportHeight() {
+        var h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+        parent.postMessage({ type: 'blueprint:resize', height: h }, '*');
+      }
+      window.addEventListener('load', reportHeight);
+      window.addEventListener('resize', reportHeight);
+      if ('ResizeObserver' in window) new ResizeObserver(reportHeight).observe(document.body);
+      window.addEventListener('message', function (e) {
+        var msg = e.data;
+        if (msg && msg.type === 'blueprint:work') {
+          try { window.onWorkData && window.onWorkData(msg.work); }
+          catch (err) { console.error('onWorkData error:', err); }
+          reportHeight();
+        }
+      });
+    })();
+    /* ════════ end boilerplate ════════ */
+  </script>
+</body>
+</html>

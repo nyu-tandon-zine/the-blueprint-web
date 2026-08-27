@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Custom Page</title>
+
+<!--
+  ════════════════════════════════════════════════════════════════
+  THE BLUEPRINT — CUSTOM PAGE STARTER
+  ════════════════════════════════════════════════════════════════
+  1. Copy this whole folder to:  public/custom/<your-work-id>/
+     (find <your-work-id> in the /works/<id> URL for your work)
+  2. Design freely inside the marked "YOUR PAGE" areas below.
+  3. Preview it in the real site at:  /custom-preview/<your-work-id>
+  4. When it's ready, add your work id to src/custom-pages/registry.ts
+     and open a pull request.
+
+  RULES (enforced by the site's security policy — see docs/custom-pages.md):
+   • Inline all your CSS and JavaScript in THIS file. Separate .css/.js
+     files in your folder will NOT load.
+   • Images / audio: a file in this folder, a data: URI, or a Supabase URL.
+   • Extra libraries: only from unpkg, jsDelivr, or cdnjs (pin the version).
+   • Your page cannot make network requests — design it to be self-contained.
+  ════════════════════════════════════════════════════════════════
+-->
+
+<style>
+  /* ---- reset ---- */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { background: #0a0a0a; color: #fff; }
+  body { font-family: system-ui, sans-serif; line-height: 1.6; }
+
+  /* ============================================================
+     YOUR STYLES — edit everything below freely
+     ============================================================ */
+  .page { max-width: 720px; margin: 0 auto; padding: 64px 24px; }
+  .genre { text-transform: uppercase; letter-spacing: 0.2em; font-size: 12px;
+           color: #e74c3c; margin-bottom: 16px; }
+  .title { font-size: clamp(32px, 6vw, 56px); font-weight: 700; line-height: 1.1; }
+  .author { color: rgba(255,255,255,0.6); font-style: italic; margin-top: 8px; }
+  .body { margin-top: 40px; color: rgba(255,255,255,0.85); }
+  .body p { margin-bottom: 1.25em; }
+</style>
+</head>
+
+<body>
+  <!-- ============================================================
+       YOUR PAGE — this is your canvas. Build whatever you want.
+       The elements below are filled in from the database by the
+       onWorkData() function further down. Keep the id="..." hooks
+       you use, or replace this markup entirely with your own.
+       ============================================================ -->
+  <main class="page">
+    <div class="genre" id="genre">genre</div>
+    <h1 class="title" id="title">Work title</h1>
+    <div class="author" id="author">By author</div>
+    <div class="body" id="body"><p>The work’s text appears here.</p></div>
+  </main>
+
+  <script>
+    /* ============================================================
+       YOUR SCRIPT — populate the page with the real work content.
+       `work` matches the "content contract" in docs/custom-pages.md:
+         { id, title, genre, mediaType, description, content,
+           author: { name }, images: [url], audio: [{title,url}] }
+       ============================================================ */
+    window.onWorkData = function (work) {
+      document.getElementById('genre').textContent = work.genre || '';
+      document.getElementById('title').textContent = work.title || '';
+      document.getElementById('author').textContent =
+        work.author && work.author.name ? 'By ' + work.author.name : '';
+
+      var body = document.getElementById('body');
+      body.innerHTML = '';
+      (work.content || '').split('\n\n').forEach(function (para) {
+        if (!para.trim()) return;
+        var p = document.createElement('p');
+        p.textContent = para; // textContent, never innerHTML, for safety
+        body.appendChild(p);
+      });
+    };
+
+    /* ════════ Blueprint boilerplate — do not edit below ════════ */
+    (function () {
+      function reportHeight() {
+        var h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+        parent.postMessage({ type: 'blueprint:resize', height: h }, '*');
+      }
+      window.addEventListener('load', reportHeight);
+      window.addEventListener('resize', reportHeight);
+      if ('ResizeObserver' in window) new ResizeObserver(reportHeight).observe(document.body);
+      window.addEventListener('message', function (e) {
+        var msg = e.data;
+        if (msg && msg.type === 'blueprint:work') {
+          try { window.onWorkData && window.onWorkData(msg.work); }
+          catch (err) { console.error('onWorkData error:', err); }
+          reportHeight();
+        }
+      });
+    })();
+    /* ════════ end boilerplate ════════ */
+  </script>
+</body>
+</html>
