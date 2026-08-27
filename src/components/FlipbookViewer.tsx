@@ -16,8 +16,8 @@ export default function FlipbookViewer({ pages, issue, works }: Props) {
   const searchParams = useSearchParams()
 
   // Page 1 (the cover) is shown ALONE, then interior pages pair as real
-  // spreads: (2,3), (4,5), … This keeps facing pages that belong together
-  // actually together. Spread 0 = cover; spread s>=1 = pages[2s-1], pages[2s].
+  // spreads: (2,3), (4,5), … A lone trailing page (e.g. the back cover) is
+  // also shown alone. Spread 0 = cover; spread s>=1 = pages[2s-1], pages[2s].
   const total = pages.length
   const totalSpreads = total === 0 ? 0 : 1 + Math.ceil((total - 1) / 2)
 
@@ -38,9 +38,12 @@ export default function FlipbookViewer({ pages, issue, works }: Props) {
   const [spread, setSpread] = useState(initialSpread)
 
   const isCover = spread === 0
-  const coverPage = isCover ? pages[0] : null
-  const leftPage = isCover ? null : pages[spread * 2 - 1]
-  const rightPage = isCover ? null : pages[spread * 2]
+  const leftPage = isCover ? undefined : pages[spread * 2 - 1]
+  const rightPage = isCover ? undefined : pages[spread * 2]
+
+  // A spread shows a single centered page for the cover and for a lone
+  // trailing page (a left page with no facing right page, e.g. the back cover).
+  const singlePage = isCover ? pages[0] : leftPage && !rightPage ? leftPage : undefined
 
   if (pages.length === 0) {
     return (
@@ -127,18 +130,16 @@ export default function FlipbookViewer({ pages, issue, works }: Props) {
           ←
         </button>
 
-        {/* Pages — cover shows alone, interior pages show as a two-page spread */}
-        {isCover ? (
+        {/* A single page (cover / back cover) is centered; interior pages show as a spread */}
+        {singlePage ? (
           <div className="flex flex-1 justify-center shadow-2xl">
             <div className="relative w-1/2 aspect-[85/110] bg-[#F8F1E2]">
-              {coverPage && (
-                <Image
-                  src={coverPage.image_url}
-                  alt={`Page ${coverPage.page_number}`}
-                  fill
-                  className="object-cover"
-                />
-              )}
+              <Image
+                src={singlePage.image_url}
+                alt={`Page ${singlePage.page_number}`}
+                fill
+                className="object-cover"
+              />
             </div>
           </div>
         ) : (
