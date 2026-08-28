@@ -12,6 +12,13 @@ interface Props {
   works: Work[]
 }
 
+// One shared `sizes` for every page image. Because the browser chooses which
+// image candidate to download from `sizes` (not from the element's actual box),
+// giving the visible pages AND the hidden preloaded pages the same `sizes` means
+// they resolve to the *same* file — so a preloaded page is already in cache when
+// the reader flips to it, and there's no flicker.
+const PAGE_SIZES = '(max-width: 768px) 45vw, 480px'
+
 export default function FlipbookViewer({ pages, issue, works }: Props) {
   const searchParams = useSearchParams()
 
@@ -24,6 +31,13 @@ export default function FlipbookViewer({ pages, issue, works }: Props) {
   // Which spread does a given page number live on?
   const spreadForPage = (pageNumber: number) =>
     pageNumber <= 1 ? 0 : Math.floor(pageNumber / 2)
+
+  // The page(s) that make up a given spread.
+  const pagesForSpread = (s: number): Page[] => {
+    if (s < 0 || s >= totalSpreads) return []
+    if (s === 0) return pages[0] ? [pages[0]] : []
+    return [pages[s * 2 - 1], pages[s * 2]].filter(Boolean) as Page[]
+  }
 
   // Initialise spread from ?work= param if present
   const initialSpread = (() => {
@@ -44,6 +58,22 @@ export default function FlipbookViewer({ pages, issue, works }: Props) {
   // A spread shows a single centered page for the cover and for a lone
   // trailing page (a left page with no facing right page, e.g. the back cover).
   const singlePage = isCover ? pages[0] : leftPage && !rightPage ? leftPage : undefined
+
+  // Preload window: warm the next two spreads and the previous one, so flipping
+  // is instant. We skip the pages already on screen and de-dupe.
+  const shownIds = new Set(
+    (singlePage ? [singlePage] : ([leftPage, rightPage].filter(Boolean) as Page[])).map((p) => p.id),
+  )
+  const preloadPages: Page[] = []
+  const seenIds = new Set<string>()
+  for (const s of [spread + 1, spread - 1, spread + 2]) {
+    for (const p of pagesForSpread(s)) {
+      if (!shownIds.has(p.id) && !seenIds.has(p.id)) {
+        seenIds.add(p.id)
+        preloadPages.push(p)
+      }
+    }
+  }
 
   if (pages.length === 0) {
     return (
@@ -138,6 +168,8 @@ export default function FlipbookViewer({ pages, issue, works }: Props) {
                 src={singlePage.image_url}
                 alt={`Page ${singlePage.page_number}`}
                 fill
+                sizes={PAGE_SIZES}
+                priority={isCover}
                 className="object-cover"
               />
             </div>
@@ -151,6 +183,7 @@ export default function FlipbookViewer({ pages, issue, works }: Props) {
                   src={leftPage.image_url}
                   alt={`Page ${leftPage.page_number}`}
                   fill
+                  sizes={PAGE_SIZES}
                   className="object-cover"
                 />
               )}
@@ -163,6 +196,7 @@ export default function FlipbookViewer({ pages, issue, works }: Props) {
                   src={rightPage.image_url}
                   alt={`Page ${rightPage.page_number}`}
                   fill
+                  sizes={PAGE_SIZES}
                   className="object-cover"
                 />
               ) : (
@@ -187,6 +221,21 @@ export default function FlipbookViewer({ pages, issue, works }: Props) {
       <span className="text-xs text-[#B6CCFF] uppercase tracking-widest">
         {spread + 1} / {totalSpreads}
       </span>
+
+      {/* Off-screen preloader — fetches upcoming pages so flips don't flicker.
+          Hidden from layout and screen readers; `loading="eager"` forces the
+          fetch now, and the shared PAGE_SIZES makes it the same file the visible
+          page will use. */}
+      <div
+        aria-hidden
+        style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', opacity: 0, pointerEvents: 'none' }}
+      >
+        {preloadPages.map((p) => (
+          <div key={p.id} style={{ position: 'relative', width: 2, height: 2 }}>
+            <Image src={p.image_url} alt="" fill sizes={PAGE_SIZES} loading="eager" />
+          </div>
+        ))}
+      </div>
 
     </div>
   )
