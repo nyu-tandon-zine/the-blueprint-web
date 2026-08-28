@@ -1,52 +1,41 @@
+<!--
+  ════════════════════════════════════════════════════════════════
+  THE BLUEPRINT — REFERENCE CUSTOM PAGE
+  A complete, working example. Read it to see the patterns, then
+  build your own from custom-page-starter/ (don't edit this one).
+  ════════════════════════════════════════════════════════════════
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Custom Page — Reference Example</title>
-
-<!--
-  ════════════════════════════════════════════════════════════════
-  THE BLUEPRINT — REFERENCE CUSTOM PAGE
-  A complete, working example. Read it to see the patterns, then
-  build your own from custom-page-starter/ (don't edit this one).
-
-  Demonstrates:
-   • A bespoke layout + type treatment
-   • A light interactive element (an interactive canvas — vanilla JS,
-     no external library needed)
-   • Reading real work content via onWorkData()
-   • Reporting height back to the site so the frame fits
-   • Sensible fallback content so it also looks right when opened
-     directly at /custom/_example/index.html
-  ════════════════════════════════════════════════════════════════
--->
-
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { background: #05040f; color: #fff; overflow-x: hidden; }
   body { font-family: 'Georgia', serif; }
-
-  .stage { position: relative; min-height: 60vh; display: flex; align-items: center;
-           justify-content: center; overflow: hidden; }
-  #bg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .stage { position: relative; min-height: 60vh; display: 
+    flex; align-items: center; justify-content: center; overflow: hidden; }
+  #bg { position: absolute; inset: 0; width: 100%; height: 100%; 
+    display: block; }
   .hero { position: relative; text-align: center; padding: 96px 24px; }
   .genre { font-family: ui-monospace, monospace; text-transform: uppercase;
-           letter-spacing: 0.35em; font-size: 12px; color: #7aa2ff; margin-bottom: 20px; }
-  .title { font-size: clamp(40px, 8vw, 88px); font-weight: 400; line-height: 1.05;
-           text-shadow: 0 0 40px rgba(122,162,255,0.4); }
-  .author { margin-top: 18px; font-style: italic; color: rgba(255,255,255,0.65);
-            font-size: 18px; }
-  .scroll-hint { margin-top: 40px; font-family: ui-monospace, monospace; font-size: 11px;
-                 letter-spacing: 0.2em; color: rgba(255,255,255,0.35); }
-
+    letter-spacing: 0.35em; font-size: 12px; 
+    color: #7aa2ff; margin-bottom: 20px; }
+  .title { font-size: clamp(40px, 8vw, 88px); font-weight: 400; 
+    line-height: 1.05; text-shadow: 0 0 40px rgba(122,162,255,0.4); }
+  .author { margin-top: 18px; font-style: italic; 
+    color: rgba(255,255,255,0.65); font-size: 18px; }
+  .scroll-hint { margin-top: 40px; font-family: ui-monospace, monospace;
+    font-size: 11px; letter-spacing: 0.2em; color: rgba(255,255,255,0.35); }
   .body-wrap { max-width: 640px; margin: 0 auto; padding: 40px 24px 96px; }
   .rule { width: 48px; height: 2px; background: #7aa2ff; margin: 0 auto 48px; }
   .body { font-size: 18px; line-height: 1.9; color: rgba(255,255,255,0.88); }
   .body p { margin-bottom: 1.4em; }
-  .body p:first-letter { }
-  .body .lead:first-letter { float: left; font-size: 64px; line-height: 0.8;
-           padding: 6px 10px 0 0; color: #7aa2ff; font-weight: 700; }
+  .body .lead:first-letter { float: left; font-size: 64px; line-height: 0.8; 
+    padding: 6px 10px 0 0; color: #7aa2ff; font-weight: 700; }
 </style>
 </head>
 
@@ -65,7 +54,7 @@
     <div class="rule"></div>
     <div class="body" id="body">
       <p class="lead">This is placeholder text shown when the page is opened on its own. Inside the site, it is replaced with the real work content delivered by the page shell.</p>
-      <p>Each paragraph you store in the work’s content appears here, separated exactly where you left a blank line.</p>
+      <p>Each paragraph you store in the work's content appears here, separated exactly where you left a blank line.</p>
     </div>
   </div>
 
@@ -80,11 +69,11 @@
       function resize() {
         W = canvas.width = canvas.offsetWidth;
         H = canvas.height = canvas.offsetHeight;
-        var count = Math.round((W * H) / 14000);
+        var count = Math.round((W * H) / 4000);
         pts = [];
         for (var i = 0; i < count; i++) {
           pts.push({ x: Math.random() * W, y: Math.random() * H,
-                     vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3 });
+            vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3 });
         }
       }
       function tick() {
@@ -99,7 +88,7 @@
           if (p.y < 0 || p.y > H) p.vy *= -1;
           ctx.beginPath();
           ctx.arc(p.x, p.y, 1.4, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(122,162,255,0.55)';
+          ctx.fillStyle = 'rgba(122,162,255,0.8)';
           ctx.fill();
         }
         requestAnimationFrame(tick);
