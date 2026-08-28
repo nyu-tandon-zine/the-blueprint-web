@@ -32,7 +32,7 @@ Name it `custom/<work-name>` (e.g. `custom/the-nature-of-simulations`, or a shor
 
 ### 2. Find your work's ID
 
-Open your work on the site. The URL looks like `/works/3f9c1a2b-....` — that last part is the **work ID**. Copy it.
+Open your work on the site. The URL looks like `/works/3f9c1a2b-....` - that last part is the **work ID**. Copy it.
 
 ### 3. Copy the starter
 
@@ -103,8 +103,8 @@ Use as much or as little as you like. When you insert text, use `element.textCon
 ## The rules
 
 1. **One self-contained `index.html`.** Inline all your CSS (in a `<style>` tag) and all your JavaScript (in `<script>` tags). Separate `.css` or `.js` files in your folder **will not load**.
-2. **Assets — images, audio, fonts:** allowed from three places — a file in your own folder, a `data:` URI embedded in the HTML, or a Supabase Storage URL. (Ask a lead if you need something uploaded to storage.)
-3. **Libraries:** only from these approved CDNs — **unpkg**, **jsDelivr**, or **cdnjs** — and always pin an exact version. Example:
+2. **Assets - images, audio, fonts:** allowed from three places - a file in your own folder, a `data:` URI embedded in the HTML, or a Supabase Storage URL. (Ask a lead if you need something uploaded to storage.)
+3. **Libraries:** only from these approved CDNs - **unpkg**, **jsDelivr**, or **cdnjs** - and always pin an exact version. Example:
    ```html
    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
    ```
@@ -113,9 +113,9 @@ Use as much or as little as you like. When you insert text, use `element.textCon
 
 ### What you can use
 
-- **Tier 1 — HTML, CSS, vanilla JavaScript.** Covers most custom layouts, animations, and interactions. No tooling.
-- **Tier 2 — the approved creative-coding libraries** above, via a pinned CDN script tag.
-- **Tier 3 — a full framework (React, etc.):** allowed only as an exception. Build it as a separate project, run its build, and commit the compiled static output into your folder. Talk to a lead first.
+- **Tier 1 - HTML, CSS, vanilla JavaScript.** Covers most custom layouts, animations, and interactions. No tooling.
+- **Tier 2 - the approved creative-coding libraries** above, via a pinned CDN script tag.
+- **Tier 3 - a full framework (React, etc.):** allowed only as an exception. Build it as a separate project, run its build, and commit the compiled static output into your folder. Talk to a lead first.
 
 ---
 
@@ -125,7 +125,7 @@ Use as much or as little as you like. When you insert text, use `element.textCon
 - **Keep it reasonably light.** Big images should be compressed or in Supabase storage, not multi-megabyte files in the repo.
 - **Degrade gracefully.** If you use a fancy effect, make sure the content is still readable without it.
 - **Don't rely on fixed heights.** The frame auto-sizes to your content; just let the page flow.
-- **The site provides the chrome.** The back link, logo, and view toggle come from the shell — you don't need to add navigation.
+- **The site provides the chrome.** The back link, logo, and view toggle come from the shell - you don't need to add navigation.
 
 ---
 

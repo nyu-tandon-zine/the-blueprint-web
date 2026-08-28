@@ -1,4 +1,4 @@
-# The Blueprint — NYU Tandon Zine
+# The Blueprint - NYU Tandon Zine
 
 The digital home of *The Blueprint*, NYU Tandon's student zine. This website hosts the digital edition of each issue, showcasing works of literature, visual art, music, and film submitted by NYU students.
 
@@ -19,7 +19,7 @@ The digital home of *The Blueprint*, NYU Tandon's student zine. This website hos
 ```
 src/
 ├── app/                  # Next.js App Router pages
-│   ├── page.tsx          # Homepage — lists all works in current issue
+│   ├── page.tsx          # Homepage - lists all works in current issue
 │   ├── works/
 │   │   └── [id]/
 │   │       └── page.tsx  # Individual work detail page
@@ -64,7 +64,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_your_key_here
 
 You can find these values in your Supabase project under **Settings → API Keys** (Publishable key) and **Settings → General** (Project URL). Ask a team lead if you need access.
 
-> ⚠️ Never commit `.env.local` to the repo. It is already listed in `.gitignore`.
+> Never commit `.env.local` to the repo. It is already listed in `.gitignore`.
 
 ### 4. Run the development server
 
@@ -78,7 +78,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Branching
 
-- `main` — always deployable. Never commit directly to this branch.
+- `main` - always deployable. Never commit directly to this branch.
 - Feature branches follow the naming convention: `feature/[short-description]`
   - e.g. `feature/homepage`, `feature/work-detail-page`, `feature/admin-panel`
 - Bug fix branches: `fix/[short-description]`
@@ -104,27 +104,8 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
    ```
 5. Request a review from at least one teammate before merging.
 
-### Commit Message Style
-
-Keep commit messages short and in the imperative mood (as if completing the sentence "This commit will..."):
-
-- ✅ `Add homepage work grid`
-- ✅ `Fix audio player not loading on mobile`
-- ❌ `added some stuff`
-- ❌ `fixing the bug with the thing`
-
-### Pull Requests
-
-- PRs should be reasonably scoped — one feature or fix per PR.
-- Write a short description of what changed and why.
-- At least one other team member must approve before merging.
-
 ## Environment Setup Notes
 
 - `.env.local` is gitignored and must be set up locally by each developer (see step 3 above).
-- Supabase credentials are shared privately among team members — do not post them in Slack, issues, or PR comments.
+- Supabase credentials are shared privately among team members - do not post them anywhere else.
 - Vercel deployment is connected to the `main` branch and deploys automatically on merge.
-
-## License
-
-MIT License — see [LICENSE](./LICENSE) for details.
