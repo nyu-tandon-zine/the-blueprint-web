@@ -134,7 +134,7 @@ Use as much or as little as you like. When you insert text, use `element.textCon
 Copy this into your pull request description and tick each box:
 
 ```
-- [ ] Work is on its own branch named custom/<work-slug> (not main)
+- [ ] Work is on its own branch named custom/<work-name>
 - [ ] Folder is at public/custom/<work-id>/ with a single index.html
 - [ ] All CSS and JS are inlined (no separate .css/.js files)
 - [ ] Boilerplate block left unchanged
