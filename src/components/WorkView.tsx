@@ -39,7 +39,7 @@ export default function WorkView({
   return (
     <div style={{ position: 'relative', minHeight: '100vh', background: '#0a0a0a' }}>
       {view === 'custom' ? (
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <div key="custom-view" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
           {/* Slim site chrome — the isolated page has none of its own */}
           <div
             style={{
@@ -66,11 +66,12 @@ export default function WorkView({
           <CustomFrame src={customSrc} data={frameData} />
         </div>
       ) : (
-        defaultSlot
+        <div key="default-view">{defaultSlot}</div>
       )}
 
       {/* Floating view toggle */}
       <div
+        key="view-toggle"
         style={{
           position: 'fixed',
           right: 16,

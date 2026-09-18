@@ -22,6 +22,14 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CustomFrameData } from '@/custom-pages/frame-data'
 
+// A few pixels of slack added to the reported height. A page's true rendered
+// height is often fractional (e.g. 4000.3px) while the height it reports is a
+// rounded whole number — if that rounds *down*, the iframe ends up a sliver
+// shorter than its content and grows a 1px internal scrollbar, which makes the
+// page feel "stuck" when you scroll. Rounding up and adding this buffer keeps
+// the iframe always a hair taller than its content, so no inner scrollbar.
+const HEIGHT_BUFFER = 4
+
 export default function CustomFrame({
   src,
   data,
@@ -40,8 +48,9 @@ export default function CustomFrame({
       if (!ref.current || e.source !== ref.current.contentWindow) return
       const msg = e.data
       if (msg && msg.type === 'blueprint:resize' && typeof msg.height === 'number') {
-        // Clamp to something sane so a bug can't blow up the layout.
-        setHeight(Math.max(200, Math.min(20000, Math.round(msg.height))))
+        const next = Math.min(20000, Math.max(200, Math.ceil(msg.height) + HEIGHT_BUFFER))
+        // Ignore sub-pixel jitter so we don't thrash React state / the layout.
+        setHeight((prev) => (Math.abs(prev - next) <= 1 ? prev : next))
       }
     }
     window.addEventListener('message', onMessage)
