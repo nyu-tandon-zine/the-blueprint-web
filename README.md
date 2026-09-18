@@ -1,5 +1,7 @@
 # The Blueprint - NYU Tandon Zine
 
+Live at: [blueprintzine.org](https://www.blueprintzine.org/)
+
 The digital home of *The Blueprint*, NYU Tandon's student zine. This website hosts the digital edition of each issue, showcasing works of literature, visual art, music, and film submitted by NYU students.
 
 ## Tech Stack
