@@ -51,11 +51,11 @@ export default function PoetryViewer({ work }: { work: Work }) {
         </Link>
       </div>
 
-      {/* ── Two-column body ── */}
-      <div style={{ display: 'flex', flex: 1, padding: '24px 40px 60px' }}>
+      {/* ── Body: stacked on phones, two columns from md up ── */}
+      <div className="flex flex-1 flex-col px-5 pt-4 pb-12 md:flex-row md:px-10 md:pt-6 md:pb-[60px]">
 
         {/* Left: genre label */}
-        <div style={{ width: 220, flexShrink: 0, paddingTop: 4 }}>
+        <div className="pt-1 mb-5 md:mb-0 md:w-[220px] md:shrink-0">
           <p style={{
             fontFamily: "'Blue Screen', 'Courier New', monospace",
             fontSize: 22,
@@ -68,11 +68,11 @@ export default function PoetryViewer({ work }: { work: Work }) {
           </p>
         </div>
 
-        {/* Vertical divider */}
-        <div style={{ width: 1, background: 'rgba(255,255,255,0.2)', flexShrink: 0, marginRight: 48 }} />
+        {/* Divider: horizontal on phones, vertical from md up */}
+        <div className="h-px w-full shrink-0 bg-white/20 mb-6 md:mb-0 md:mr-12 md:h-auto md:w-px" />
 
         {/* Right: poem content */}
-        <div style={{ flex: 1, maxWidth: 680 }}>
+        <div className="min-w-0 flex-1 max-w-[680px] break-words">
 
           {/* Corner brackets */}
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 24, color: 'rgba(255,255,255,0.4)', fontSize: 18, lineHeight: 1 }}>

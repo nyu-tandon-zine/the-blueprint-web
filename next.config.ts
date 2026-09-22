@@ -29,6 +29,13 @@ const CUSTOM_PAGE_CSP = [
 ].join('; ')
 
 const nextConfig: NextConfig = {
+  // Lets a phone on the same Wi-Fi load the dev server via its LAN address
+  // (the "Network:" URL `next dev` prints) instead of `localhost`. Without
+  // this, Next 16 silently blocks cross-origin dev requests — the page's
+  // static HTML still loads, but React never hydrates, so every button,
+  // dropdown, and toggle on the site is inert. Dev-only; has no effect on
+  // production builds. Update/extend this if your LAN IP changes.
+  allowedDevOrigins: ['10.20.91.244'],
   images: {
     remotePatterns: [
       {

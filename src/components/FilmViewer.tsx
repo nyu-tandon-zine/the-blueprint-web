@@ -30,7 +30,7 @@ export default function FilmViewer({ work }: { work: Work }) {
   const embedUrl = work.external_link ? getYouTubeEmbedUrl(work.external_link) : null
 
   return (
-    <main className="max-w-4xl mx-auto px-8 py-10 w-full">
+    <main className="max-w-4xl mx-auto px-5 sm:px-8 py-10 w-full">
       <Link
         href="/"
         className="inline-block text-gray-500 hover:text-white mb-8 transition-colors"
@@ -41,7 +41,7 @@ export default function FilmViewer({ work }: { work: Work }) {
 
       <p className="text-sm text-gray-500 mb-3 capitalize">{work.genre}</p>
 
-      <h1 className="text-4xl font-bold text-white leading-tight mb-2">
+      <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-2 break-words">
         {work.title}
       </h1>
       <p className="text-lg text-gray-400 mb-8">By {work.author?.name}</p>
