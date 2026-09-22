@@ -6,7 +6,7 @@ export default function VisualArtViewer({ work }: { work: Work }) {
   const images = work.work_images ?? []
 
   return (
-    <main className="max-w-4xl mx-auto px-8 py-10 w-full">
+    <main className="max-w-4xl mx-auto px-5 sm:px-8 py-10 w-full">
       {/* Back link */}
       <Link
         href="/"
@@ -20,7 +20,7 @@ export default function VisualArtViewer({ work }: { work: Work }) {
       <p className="text-sm text-gray-500 mb-3 capitalize">{work.genre}</p>
 
       {/* Title + author */}
-      <h1 className="text-4xl font-bold text-white leading-tight mb-2">
+      <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-2 break-words">
         {work.title}
       </h1>
       <p className="text-lg text-gray-400 mb-8">By {work.author?.name}</p>

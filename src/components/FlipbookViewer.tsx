@@ -136,7 +136,17 @@ export default function FlipbookViewer({ pages, issue, works }: Props) {
             padding: '8px 14px',
             cursor: 'pointer',
             outline: 'none',
-            minWidth: 220,
+            // A native <select> with no explicit width sizes itself to its
+            // widest <option> — some work titles are long enough to blow
+            // past a phone's viewport, which makes the whole page
+            // horizontally scrollable. That overflow, in turn, makes mobile
+            // browsers pan the visual viewport away from the layout
+            // viewport, so touches land offset from what they appear to hit
+            // (the flipbook arrows included). `width: 100%` + `maxWidth`
+            // keeps this control — and the page — within the screen.
+            width: '100%',
+            maxWidth: 280,
+            minWidth: 0,
           }}
         >
           <option value="" disabled style={{ background: '#111' }}>Jump to…</option>
