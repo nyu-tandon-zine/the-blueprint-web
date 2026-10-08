@@ -18,6 +18,7 @@ const MEDIA_TYPES: { value: MediaType; label: string }[] = [
   { value: 'audio', label: 'Audio' },
   { value: 'film', label: 'Film' },
   { value: 'game', label: 'Game' },
+  { value: 'research', label: 'Research' },
 ]
 
 export default function NewWorkPage() {
