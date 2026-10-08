@@ -4,14 +4,15 @@ import { useState } from 'react'
 import Link from 'next/link'
 import type { Work, Issue } from '@/types'
 
-type Tab = 'Visual' | 'Written' | 'Other'
+type Tab = 'Visual' | 'Written' | 'Research' | 'Other'
 
-const TABS: Tab[] = ['Visual', 'Written', 'Other']
+const TABS: Tab[] = ['Visual', 'Written', 'Research', 'Other']
 
 const TAB_MEDIA_TYPES: Record<Tab, string[]> = {
-  Visual:  ['visual-art', 'film'],
+  Visual: ['visual-art', 'film'],
   Written: ['prose', 'poetry'],
-  Other:   ['audio', 'game'],
+  Research: ['research'],
+  Other: ['audio', 'game'],
 }
 
 interface Props {
