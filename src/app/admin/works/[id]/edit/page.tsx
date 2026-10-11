@@ -16,6 +16,7 @@ const MEDIA_TYPES: { value: MediaType; label: string }[] = [
   { value: 'audio', label: 'Audio' },
   { value: 'film', label: 'Film' },
   { value: 'game', label: 'Game' },
+  { value: 'research', label: 'Research' },
 ]
 
 export default function EditWorkPage() {
@@ -419,8 +420,8 @@ export default function EditWorkPage() {
           {needsExternalLink && (
             <Field label={
               mediaType === 'film' ? 'YouTube / Vimeo URL' :
-              mediaType === 'game' ? 'itch.io URL' :
-              'External link (optional)'
+                mediaType === 'game' ? 'itch.io URL' :
+                  'External link (optional)'
             }>
               <input
                 type="url"

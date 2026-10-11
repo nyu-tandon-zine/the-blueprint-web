@@ -2,7 +2,7 @@
 // Domain types — the shape of data used throughout the application
 // ----------------------------------------------------------------
 
-export type MediaType = 'prose' | 'poetry' | 'visual-art' | 'audio' | 'film' | 'game'
+export type MediaType = 'prose' | 'poetry' | 'visual-art' | 'audio' | 'film' | 'game' | 'research'
 
 export type Genre = string
 
