@@ -420,8 +420,8 @@ export default function EditWorkPage() {
           {needsExternalLink && (
             <Field label={
               mediaType === 'film' ? 'YouTube / Vimeo URL' :
-              mediaType === 'game' ? 'itch.io URL' :
-              'External link (optional)'
+                mediaType === 'game' ? 'itch.io URL' :
+                  'External link (optional)'
             }>
               <input
                 type="url"
