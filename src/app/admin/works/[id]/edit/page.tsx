@@ -216,7 +216,7 @@ export default function EditWorkPage() {
     setExistingAudioFiles((prev) => prev.filter((f) => f.id !== trackId))
   }
 
-  const needsContent = mediaType === 'prose' || mediaType === 'poetry'
+  const needsContent = mediaType === 'prose' || mediaType === 'poetry' || mediaType === 'research'
   const needsExternalLink = mediaType === 'film' || mediaType === 'game' || mediaType === 'audio'
 
   if (fetchingWork) {
