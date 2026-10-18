@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import type { Work, Issue } from '@/types'
+import { SUBMISSION_FORM_URL, SUBMISSIONS_OPEN } from '@/lib/links'
 
 type Tab = 'Visual' | 'Written' | 'Other'
 
@@ -58,7 +59,7 @@ export default function HomepageClient({ issue, works }: Props) {
         }} />
 
         {/* Title */}
-        <div style={{ position: 'relative', textAlign: 'center' }}>
+        <div style={{ position: 'relative', textAlign: 'center', padding: '0 16px 56px' }}>
           <div style={{
             fontSize: 'clamp(60px, 9vw, 100px)',
             fontWeight: 100,
@@ -79,6 +80,18 @@ export default function HomepageClient({ issue, works }: Props) {
           }}>
             An NYU Tandon Zine
           </div>
+
+          {/* Submissions CTA */}
+          {SUBMISSIONS_OPEN && (
+            <a
+              href={SUBMISSION_FORM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hero-cta"
+            >
+              SUBMIT YOUR WORK
+            </a>
+          )}
         </div>
 
         {/* Animated scroll chevron */}

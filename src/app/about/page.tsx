@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import { SUBMISSION_FORM_URL, AI_POLICY_URL } from '@/lib/links'
 
 const baseBtn: CSSProperties = {
   fontFamily: "'Blue Screen', 'Courier New', monospace",
@@ -69,7 +70,7 @@ export default function AboutPage() {
         marginTop: 8,
       }}>
         <a 
-          href="https://docs.google.com/forms/d/e/1FAIpQLScX5KzwZgT9c56iO0QuyttJUuuiD_AUAI0uERmjGZzDRJYomg/viewform"
+          href={SUBMISSION_FORM_URL}
           target="_blank"
           rel="noopener noreferrer" 
           style={primaryBtn}
@@ -77,7 +78,7 @@ export default function AboutPage() {
           SUBMIT YOUR WORK
         </a>
         <a 
-          href="https://docs.google.com/document/d/18t4-Gp59C3ECms3wElxV0MKhBbAskvHjflXcSJdzaGs/edit?usp=sharing" 
+          href={AI_POLICY_URL}
           target="_blank"
           rel="noopener noreferrer"
           style={secondaryBtn}
