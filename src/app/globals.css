@@ -148,6 +148,43 @@ body {
   animation: chevronBounce 2s ease-in-out infinite, chevronGlow 2s ease-in-out infinite;
 }
 
+/* ── Homepage submissions CTA ────────────────────────────────────────────── */
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;              /* comfortable tap target on phones */
+  margin-top: 32px;
+  padding: 0 24px;
+  font-family: var(--font-blue-screen);
+  font-size: 14px;
+  letter-spacing: 3px;
+  white-space: nowrap;
+  color: #fff;
+  background: #c0392b;
+  border: 1px solid #c0392b;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.hero-cta:hover {
+  background: transparent;
+}
+
+.hero-cta:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  .hero-cta {
+    margin-top: 24px;
+    font-size: 13px;
+    letter-spacing: 2px;
+  }
+}
+
 /* ── Work list row ────────────────────────────────────────────────────────── */
 
 .work-row {
