@@ -23,7 +23,7 @@ async function getWorksForIssue(issueId: string): Promise<Work[]> {
     .from('works')
     .select(`
       *,
-      author:authors(id, name)
+      author:authors!works_author_id_fkey(id, name)
     `)
     .eq('issue_id', issueId)
     .order('position', { ascending: true })

@@ -14,7 +14,7 @@ export default async function AdminDashboard() {
 
   const { data: works } = await supabase
     .from('works')
-    .select('*, author:authors(id, name), issue:issues(*)')
+    .select('*, author:authors!works_author_id_fkey(id, name), issue:issues(*)')
     .order('position', { ascending: true })
 
   const workList = (works ?? []) as Work[]

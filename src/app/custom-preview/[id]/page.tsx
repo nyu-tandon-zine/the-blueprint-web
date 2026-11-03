@@ -13,7 +13,7 @@ export const metadata: Metadata = { robots: { index: false, follow: false } }
 async function getWork(id: string): Promise<Work | null> {
   const { data, error } = await supabase
     .from('works')
-    .select(`*, author:authors(id, name), work_images(*), work_audio_files(*)`)
+    .select(`*, author:authors!works_author_id_fkey(id, name), work_images(*), work_audio_files(*)`)
     .eq('id', id)
     .single()
   if (error || !data) return null
