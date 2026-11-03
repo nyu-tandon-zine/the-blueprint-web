@@ -24,7 +24,7 @@ export interface Author {
 }
 
 // The author fields that are safe to send to the browser. Works are joined
-// with only these columns (`author:authors(id, name)`), so the type says so —
+// with only these columns (`author:authors!works_author_id_fkey(id, name)`), so the type says so —
 // add a field here only if it's meant to be public. Never add `email`.
 // Private contact info — admin-only table (RLS blocks anon). Never join this
 // into anything a public page fetches.
