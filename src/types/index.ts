@@ -24,6 +24,11 @@ export interface Author {
   bio: string | null
 }
 
+// The author fields that are safe to send to the browser. Works are joined
+// with only these columns (`author:authors(id, name)`), so the type says so —
+// add a field here only if it's meant to be public. Never add `email`.
+export type PublicAuthor = Pick<Author, 'id' | 'name'>
+
 export interface Work {
   id: string
   title: string
@@ -41,7 +46,7 @@ export interface Work {
   position: number | null         // Display order on the homepage listing
   // Joined relations (populated when fetched with select)
   issue?: Issue
-  author?: Author
+  author?: PublicAuthor
   work_images?: WorkImage[]
   work_audio_files?: WorkAudioFile[]
 }
