@@ -85,7 +85,6 @@ export default function NewWorkPage() {
           .from('authors')
           .insert({
             name: authorName.trim(),
-            email: authorEmail.trim() || null,
             bio: authorBio.trim() || null,
             major: authorMajor.trim() || null,
             graduation_year: authorGradYear ? parseInt(authorGradYear) : null,
@@ -94,6 +93,15 @@ export default function NewWorkPage() {
           .single()
         if (error) throw error
         resolvedAuthorId = data.id
+
+        // Email lives in the private author_contacts table (admin-only),
+        // never on the public authors row.
+        if (authorEmail.trim()) {
+          const { error: contactError } = await supabase
+            .from('author_contacts')
+            .insert({ author_id: data.id, email: authorEmail.trim() })
+          if (contactError) throw contactError
+        }
       }
 
       // Step 2: insert the work (audio tracks go into work_audio_files, not media_url)
@@ -527,10 +535,6 @@ export default function NewWorkPage() {
                     name: authorMode === 'existing'
                       ? authors.find((a) => a.id === authorId)?.name ?? 'Unknown'
                       : authorName || 'Author Name',
-                    email: null,
-                    major: null,
-                    graduation_year: null,
-                    bio: null,
                   },
                 }}
               />

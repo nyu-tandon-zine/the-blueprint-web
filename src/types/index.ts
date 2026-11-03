@@ -18,11 +18,23 @@ export interface Issue {
 export interface Author {
   id: string
   name: string
-  email: string | null
   major: string | null
   graduation_year: number | null
   bio: string | null
 }
+
+// The author fields that are safe to send to the browser. Works are joined
+// with only these columns (`author:authors(id, name)`), so the type says so —
+// add a field here only if it's meant to be public. Never add `email`.
+// Private contact info — admin-only table (RLS blocks anon). Never join this
+// into anything a public page fetches.
+export interface AuthorContact {
+  author_id: string
+  email: string | null
+  created_at: string
+}
+
+export type PublicAuthor = Pick<Author, 'id' | 'name'>
 
 export interface Work {
   id: string
@@ -41,7 +53,7 @@ export interface Work {
   position: number | null         // Display order on the homepage listing
   // Joined relations (populated when fetched with select)
   issue?: Issue
-  author?: Author
+  author?: PublicAuthor
   work_images?: WorkImage[]
   work_audio_files?: WorkAudioFile[]
 }

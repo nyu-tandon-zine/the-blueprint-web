@@ -19,7 +19,7 @@ async function getWork(id: string): Promise<Work | null> {
     .from('works')
     .select(`
       *,
-      author:authors(*),
+      author:authors(id, name),
       issue:issues(*),
       work_images(*),
       work_audio_files(*)
