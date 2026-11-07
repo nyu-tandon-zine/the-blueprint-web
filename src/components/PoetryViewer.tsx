@@ -1,4 +1,6 @@
 import type { Work } from '@/types'
+import Byline from '@/components/Byline'
+import { sortedCredits } from '@/lib/credits'
 import Link from 'next/link'
 
 // Renders a line of text, converting *italic* spans to <em> tags
@@ -100,7 +102,7 @@ export default function PoetryViewer({ work }: { work: Work }) {
             fontFamily: 'sans-serif',
             marginBottom: 4,
           }}>
-            By {work.author?.name}
+            By <Byline credits={sortedCredits(work)} />
           </p>
 
           {/* Date */}

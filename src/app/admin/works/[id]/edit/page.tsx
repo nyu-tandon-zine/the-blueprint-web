@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase-browser'
 import type { MediaType } from '@/types'
 import Link from 'next/link'
+import AuthorCreditsField, { emptyExisting, resolveCredits, setWorkCredits, type CreditDraft } from '@/components/admin/AuthorCreditsField'
 
 type Author = { id: string; name: string }
 type Issue = { id: string; semester: string }
@@ -34,7 +35,7 @@ export default function EditWorkPage() {
   const [worksCited, setWorksCited] = useState('')
   const [externalLink, setExternalLink] = useState('')
   const [issueId, setIssueId] = useState('')
-  const [authorId, setAuthorId] = useState('')
+  const [credits, setCredits] = useState<CreditDraft[]>([])
   const [file, setFile] = useState<File | null>(null)
   const [currentMediaUrl, setCurrentMediaUrl] = useState<string | null>(null)
   const [newImages, setNewImages] = useState<File[]>([])
@@ -55,13 +56,14 @@ export default function EditWorkPage() {
 
   useEffect(() => {
     async function loadAll() {
-      const [{ data: work }, { data: authorsData }, { data: issuesData }, { data: imagesData }, { data: audioData }] =
+      const [{ data: work }, { data: authorsData }, { data: issuesData }, { data: imagesData }, { data: audioData }, { data: creditsData }] =
         await Promise.all([
           supabase.from('works').select('*').eq('id', workId).single(),
           supabase.from('authors').select('id, name').order('name'),
           supabase.from('issues').select('id, semester').order('published_at', { ascending: false }),
           supabase.from('work_images').select('*').eq('work_id', workId).order('position'),
           supabase.from('work_audio_files').select('*').eq('work_id', workId).order('position'),
+          supabase.from('work_authors').select('author_id, role, position').eq('work_id', workId).order('position'),
         ])
 
       if (authorsData) setAuthors(authorsData)
@@ -78,7 +80,12 @@ export default function EditWorkPage() {
         setWorksCited(work.works_cited ?? '')
         setExternalLink(work.external_link ?? '')
         setIssueId(work.issue_id)
-        setAuthorId(work.author_id)
+        // Credits from work_authors; fall back to the legacy single author.
+        setCredits(
+          creditsData && creditsData.length > 0
+            ? creditsData.map((c: { author_id: string; role: string | null }) => emptyExisting(c.author_id, c.role ?? ''))
+            : [emptyExisting(work.author_id ?? '')],
+        )
         setCurrentMediaUrl(work.media_url)
         setStartPage(work.start_page != null ? String(work.start_page) : '')
       }
@@ -94,6 +101,9 @@ export default function EditWorkPage() {
     setError(null)
 
     try {
+      // Validate + create any new authors before touching the work.
+      const resolved = await resolveCredits(supabase, credits)
+
       let mediaUrl = currentMediaUrl
 
       // Upload new file if one was selected
@@ -123,12 +133,14 @@ export default function EditWorkPage() {
           media_url: mediaUrl,
           external_link: externalLink.trim() || null,
           issue_id: issueId,
-          author_id: authorId,
           start_page: startPage !== '' ? parseInt(startPage, 10) : null,
         })
         .eq('id', workId)
 
       if (updateError) throw updateError
+
+      // Replace credits in one transaction (also syncs the legacy author_id).
+      await setWorkCredits(supabase, workId, resolved)
 
       // Upload any new audio files
       if (mediaType === 'audio' && newAudioFiles.length > 0) {
@@ -281,15 +293,8 @@ export default function EditWorkPage() {
             </select>
           </Field>
 
-          {/* Author */}
-          <Field label="Author">
-            <select value={authorId} onChange={(e) => setAuthorId(e.target.value)} required style={selectStyle}>
-              <option value="">Select an author…</option>
-              {authors.map((a) => (
-                <option key={a.id} value={a.id}>{a.name}</option>
-              ))}
-            </select>
-          </Field>
+          {/* Authors */}
+          <AuthorCreditsField authors={authors} value={credits} onChange={setCredits} />
 
           {/* Description */}
           <Field label="Description (optional)">

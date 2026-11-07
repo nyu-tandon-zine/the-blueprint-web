@@ -1,11 +1,13 @@
 'use client'
 
 import type { Work } from '@/types'
+import Byline from '@/components/Byline'
+import { sortedCredits, creditNames } from '@/lib/credits'
 import Link from 'next/link'
 import AudioPlayer from './AudioPlayer/Player'
 
 export default function AudioViewer({ work }: { work: Work }) {
-  const author = work.author?.name ?? 'Unknown'
+  const author = creditNames(sortedCredits(work)) || 'Unknown'
 
   // Build track list — prefer work_audio_files, fall back to single media_url
   const tracks = (() => {
@@ -39,7 +41,7 @@ export default function AudioViewer({ work }: { work: Work }) {
       <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-2 break-words">
         {work.title}
       </h1>
-      <p className="text-lg text-gray-400 mb-8">By {work.author?.name}</p>
+      <p className="text-lg text-gray-400 mb-8">By <Byline credits={sortedCredits(work)} /></p>
 
       {/* Audio player */}
       {tracks.length > 0 ? (

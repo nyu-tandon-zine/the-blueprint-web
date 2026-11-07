@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase-browser'
 import type { MediaType, Work } from '@/types'
 import Link from 'next/link'
 import { ArticleHeader, ProseBody, PoetryBody, WorksCited } from '@/components/TextFormatter'
+import AuthorCreditsField, { emptyExisting, resolveCredits, setWorkCredits, type CreditDraft } from '@/components/admin/AuthorCreditsField'
 
 type Author = { id: string; name: string }
 type Issue = { id: string; semester: string }
@@ -37,14 +38,9 @@ export default function NewWorkPage() {
   const [files, setFiles] = useState<File[]>([])
   const [newAudioFiles, setNewAudioFiles] = useState<{ file: File; title: string }[]>([])
 
-  // Author state — pick existing or create new
-  const [authorMode, setAuthorMode] = useState<'existing' | 'new'>('new')
-  const [authorId, setAuthorId] = useState('')
-  const [authorName, setAuthorName] = useState('')
-  const [authorEmail, setAuthorEmail] = useState('')
-  const [authorBio, setAuthorBio] = useState('')
-  const [authorMajor, setAuthorMajor] = useState('')
-  const [authorGradYear, setAuthorGradYear] = useState('')
+  // Credits — ordered list of authors. Starts on "existing" so returning
+  // contributors get picked, not duplicated (one person = one contributor page).
+  const [credits, setCredits] = useState<CreditDraft[]>(() => [emptyExisting()])
 
   // Data for dropdowns
   const [authors, setAuthors] = useState<Author[]>([])
@@ -77,32 +73,8 @@ export default function NewWorkPage() {
     setError(null)
 
     try {
-      // Step 1: resolve author
-      let resolvedAuthorId = authorId
-      if (authorMode === 'new') {
-        if (!authorName.trim()) throw new Error('Author name is required')
-        const { data, error } = await supabase
-          .from('authors')
-          .insert({
-            name: authorName.trim(),
-            bio: authorBio.trim() || null,
-            major: authorMajor.trim() || null,
-            graduation_year: authorGradYear ? parseInt(authorGradYear) : null,
-          })
-          .select('id')
-          .single()
-        if (error) throw error
-        resolvedAuthorId = data.id
-
-        // Email lives in the private author_contacts table (admin-only),
-        // never on the public authors row.
-        if (authorEmail.trim()) {
-          const { error: contactError } = await supabase
-            .from('author_contacts')
-            .insert({ author_id: data.id, email: authorEmail.trim() })
-          if (contactError) throw contactError
-        }
-      }
+      // Step 1: resolve credits (creates any new authors)
+      const resolved = await resolveCredits(supabase, credits)
 
       // Step 2: insert the work (audio tracks go into work_audio_files, not media_url)
       const { data: newWork, error: workError } = await supabase.from('works').insert({
@@ -115,9 +87,12 @@ export default function NewWorkPage() {
         media_url: null,
         external_link: externalLink.trim() || null,
         issue_id: issueId,
-        author_id: resolvedAuthorId,
+        author_id: resolved.authorIds[0], // legacy column; work_authors is the source of truth
       }).select('id').single()
       if (workError) throw workError
+
+      // Step 3: write credits (work_authors), in byline order
+      await setWorkCredits(supabase, newWork.id, resolved)
 
       // Step 3b: upload audio tracks into work_audio_files
       if (mediaType === 'audio' && newAudioFiles.length > 0) {
@@ -232,81 +207,8 @@ export default function NewWorkPage() {
             </select>
           </Field>
 
-          {/* Author */}
-          <div>
-            <label style={labelStyle}>Author</label>
-            <div className="flex gap-4 mb-3">
-              {(['new', 'existing'] as const).map((mode) => (
-                <label key={mode} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, cursor: 'pointer', color: 'rgba(255,255,255,0.65)', fontFamily: 'sans-serif' }}>
-                  <input
-                    type="radio"
-                    value={mode}
-                    checked={authorMode === mode}
-                    onChange={() => setAuthorMode(mode)}
-                    style={{ accentColor: '#c0392b' }}
-                  />
-                  {mode === 'new' ? 'New author' : 'Existing author'}
-                </label>
-              ))}
-            </div>
-
-            {authorMode === 'existing' ? (
-              <select
-                value={authorId}
-                onChange={(e) => setAuthorId(e.target.value)}
-                required
-                style={selectStyle}
-              >
-                <option value="">Select an author…</option>
-                {authors.map((a) => (
-                  <option key={a.id} value={a.id}>{a.name}</option>
-                ))}
-              </select>
-            ) : (
-              <div className="space-y-3">
-                <input
-                  type="text"
-                  value={authorName}
-                  onChange={(e) => setAuthorName(e.target.value)}
-                  placeholder="Full name"
-                  required
-                  style={inputStyle}
-                />
-                <input
-                  type="email"
-                  value={authorEmail}
-                  onChange={(e) => setAuthorEmail(e.target.value)}
-                  placeholder="Email (optional)"
-                  style={inputStyle}
-                />
-                <textarea
-                  value={authorBio}
-                  onChange={(e) => setAuthorBio(e.target.value)}
-                  placeholder="Bio (optional)"
-                  rows={3}
-                  style={inputStyle}
-                />
-                <div className="grid grid-cols-2 gap-3">
-                  <input
-                    type="text"
-                    value={authorMajor}
-                    onChange={(e) => setAuthorMajor(e.target.value)}
-                    placeholder="Major (optional)"
-                    style={inputStyle}
-                  />
-                  <input
-                    type="number"
-                    value={authorGradYear}
-                    onChange={(e) => setAuthorGradYear(e.target.value)}
-                    placeholder="Grad year (optional)"
-                    min={2020}
-                    max={2040}
-                    style={inputStyle}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
+          {/* Authors */}
+          <AuthorCreditsField authors={authors} value={credits} onChange={setCredits} />
 
           {/* Description */}
           <Field label="Description (optional)">
@@ -530,12 +432,17 @@ export default function NewWorkPage() {
                   author_id: '',
                   start_page: null,
                   position: null,
-                  author: {
-                    id: '',
-                    name: authorMode === 'existing'
-                      ? authors.find((a) => a.id === authorId)?.name ?? 'Unknown'
-                      : authorName || 'Author Name',
-                  },
+                  credits: credits.map((d, i) => ({
+                    position: i,
+                    role: d.role.trim() || null,
+                    author: {
+                      id: d.key,
+                      slug: '',
+                      name: d.kind === 'existing'
+                        ? authors.find((x) => x.id === d.authorId)?.name ?? 'Author Name'
+                        : d.name || 'Author Name',
+                    },
+                  })),
                 }}
               />
               {content ? (

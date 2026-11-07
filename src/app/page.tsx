@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import type { Work, Issue } from '@/types'
 import HomepageClient from '@/components/HomepageClient'
+import { CREDITS_SELECT } from '@/lib/credits'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,10 +22,7 @@ async function getCurrentIssue(): Promise<Issue | null> {
 async function getWorksForIssue(issueId: string): Promise<Work[]> {
   const { data, error } = await supabase
     .from('works')
-    .select(`
-      *,
-      author:authors!works_author_id_fkey(id, name)
-    `)
+    .select(`*, ${CREDITS_SELECT}`)
     .eq('issue_id', issueId)
     .order('position', { ascending: true })
 
