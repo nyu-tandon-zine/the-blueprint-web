@@ -23,12 +23,14 @@ export default function WorkView({
   initialView,
   customSrc,
   frameData,
+  byline,
   defaultSlot,
 }: {
   hasCustom: boolean
   initialView: View
   customSrc: string
   frameData: CustomFrameData
+  byline?: React.ReactNode   // linked author names, rendered on the server
   defaultSlot: React.ReactNode
 }) {
   const [view, setView] = useState<View>(hasCustom ? initialView : 'default')
@@ -60,7 +62,7 @@ export default function WorkView({
             </Link>
             <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', fontFamily: 'sans-serif' }}>
               {frameData.title}
-              {frameData.author.name ? ` · ${frameData.author.name}` : ''}
+              {frameData.authors.length > 0 && <> · {byline ?? frameData.author.name}</>}
             </span>
           </div>
           <CustomFrame src={customSrc} data={frameData} />

@@ -18,14 +18,12 @@ export interface Issue {
 export interface Author {
   id: string
   name: string
+  slug: string            // URL handle: /contributors/<slug>. Set by a DB trigger on insert; never changes.
   major: string | null
   graduation_year: number | null
   bio: string | null
 }
 
-// The author fields that are safe to send to the browser. Works are joined
-// with only these columns (`author:authors!works_author_id_fkey(id, name)`), so the type says so —
-// add a field here only if it's meant to be public. Never add `email`.
 // Private contact info — admin-only table (RLS blocks anon). Never join this
 // into anything a public page fetches.
 export interface AuthorContact {
@@ -34,7 +32,16 @@ export interface AuthorContact {
   created_at: string
 }
 
-export type PublicAuthor = Pick<Author, 'id' | 'name'>
+// The author fields that are safe to send to the browser on work listings.
+// Add a field here only if it's meant to be public. Never add `email`.
+export type PublicAuthor = Pick<Author, 'id' | 'name' | 'slug'>
+
+// One row of work_authors: who made a work, in byline order.
+export interface Credit {
+  position: number        // 0 = first in the byline
+  role: string | null     // e.g. 'music'; null = plain author
+  author: PublicAuthor
+}
 
 export interface Work {
   id: string
@@ -48,12 +55,12 @@ export interface Work {
   external_link: string | null    // External link for audio (Spotify, SoundCloud, etc.)
   created_at: string
   issue_id: string
-  author_id: string
+  author_id: string               // LEGACY: first author only. Read `credits` instead; column will be dropped.
   start_page: number | null       // Page number in the print zine where this work begins
   position: number | null         // Display order on the homepage listing
   // Joined relations (populated when fetched with select)
   issue?: Issue
-  author?: PublicAuthor
+  credits?: Credit[]              // from work_authors; use sortedCredits()
   work_images?: WorkImage[]
   work_audio_files?: WorkAudioFile[]
 }

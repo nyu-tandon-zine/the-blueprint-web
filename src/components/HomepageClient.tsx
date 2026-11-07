@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import type { Work, Issue } from '@/types'
+import { sortedCredits, creditNames } from '@/lib/credits'
 import { SUBMISSION_FORM_URL, SUBMISSIONS_OPEN } from '@/lib/links'
 
 type Tab = 'Visual' | 'Written' | 'Research' | 'Other'
@@ -216,7 +217,8 @@ export default function HomepageClient({ issue, works }: Props) {
                   fontFamily: 'sans-serif',
                   flexShrink: 0,
                 }}>
-                  {work.author?.name}
+                  {/* Plain text: this row is already a <Link>, and <a> can't nest */}
+                  {creditNames(sortedCredits(work))}
                 </div>
               </Link>
             ))}

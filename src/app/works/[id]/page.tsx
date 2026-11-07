@@ -11,6 +11,8 @@ import AudioViewer from '@/components/AudioViewer'
 import FilmViewer from '@/components/FilmViewer'
 import GameViewer from '@/components/GameViewer'
 import WorkView from '@/components/WorkView'
+import Byline from '@/components/Byline'
+import { CREDITS_SELECT, sortedCredits } from '@/lib/credits'
 import { toFrameData } from '@/custom-pages/frame-data'
 import { hasCustomPage, customPageDefaultView, customPagePath } from '@/custom-pages/registry'
 
@@ -19,7 +21,7 @@ async function getWork(id: string): Promise<Work | null> {
     .from('works')
     .select(`
       *,
-      author:authors!works_author_id_fkey(id, name),
+      ${CREDITS_SELECT},
       issue:issues(*),
       work_images(*),
       work_audio_files(*)
@@ -79,6 +81,7 @@ export default async function WorkPage({
       initialView={initialView}
       customSrc={customPagePath(work.id)}
       frameData={toFrameData(work)}
+      byline={<Byline credits={sortedCredits(work)} />}
       defaultSlot={<DefaultViewer work={work} />}
     />
   )

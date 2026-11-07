@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import type { Work } from '@/types'
 import type { Metadata } from 'next'
+import { CREDITS_SELECT } from '@/lib/credits'
 import WorkView from '@/components/WorkView'
 import { toFrameData, type CustomFrameData } from '@/custom-pages/frame-data'
 import { customPagePath } from '@/custom-pages/registry'
@@ -13,7 +14,7 @@ export const metadata: Metadata = { robots: { index: false, follow: false } }
 async function getWork(id: string): Promise<Work | null> {
   const { data, error } = await supabase
     .from('works')
-    .select(`*, author:authors!works_author_id_fkey(id, name), work_images(*), work_audio_files(*)`)
+    .select(`*, ${CREDITS_SELECT}, work_images(*), work_audio_files(*)`)
     .eq('id', id)
     .single()
   if (error || !data) return null
@@ -31,6 +32,7 @@ const DEMO_DATA: CustomFrameData = {
   content:
     'This is where the work’s text would appear.\n\nParagraphs are separated by a blank line, exactly as they are stored in the database.',
   author: { name: 'Sample Author' },
+  authors: [{ name: 'Sample Author', slug: 'sample-author', role: null }],
   images: [],
   audio: [],
 }

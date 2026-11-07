@@ -89,7 +89,8 @@ window.onWorkData = function (work) {
   //   mediaType:   'prose' | 'poetry' | 'visual-art' | 'audio' | 'film' | 'game'
   //   description: string | null
   //   content:     string | null            // full text; paragraphs split on blank lines
-  //   author:      { name: string | null }
+  //   author:      { name: string | null }   // every author joined: "Ana & Ben"
+  //   authors:     { name: string, slug: string, role: string | null }[]   // in byline order
   //   images:      string[]                  // image URLs, in order
   //   audio:       { title: string, url: string }[]
   // }

@@ -1,4 +1,6 @@
 import type { Work } from '@/types'
+import Byline from '@/components/Byline'
+import { sortedCredits } from '@/lib/credits'
 import Link from 'next/link'
 
 function getYouTubeEmbedUrl(url: string): string | null {
@@ -44,7 +46,7 @@ export default function FilmViewer({ work }: { work: Work }) {
       <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-2 break-words">
         {work.title}
       </h1>
-      <p className="text-lg text-gray-400 mb-8">By {work.author?.name}</p>
+      <p className="text-lg text-gray-400 mb-8">By <Byline credits={sortedCredits(work)} /></p>
 
       {embedUrl ? (
         <div className="w-full aspect-video rounded overflow-hidden bg-white/5 mb-8">

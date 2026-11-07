@@ -1,4 +1,6 @@
 import type { Work } from '@/types'
+import Byline from '@/components/Byline'
+import { sortedCredits } from '@/lib/credits'
 
 /**
  * TextFormatter — auto-formats article display following the Blueprint Design Guidelines.
@@ -105,12 +107,12 @@ export function ArticleHeader({
       </h1>
 
       {/* Author — H3 style */}
-      {work.author?.name && (
+      {(work.credits?.length ?? 0) > 0 && (
         <p
           className={`text-lg mb-1 ${palette.author}`}
           style={styles.subtitle}
         >
-          By {work.author.name}
+          By <Byline credits={sortedCredits(work)} />
         </p>
       )}
 

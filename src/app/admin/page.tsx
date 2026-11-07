@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import type { Work } from '@/types'
+import { CREDITS_SELECT, sortedCredits, creditNames } from '@/lib/credits'
 import AdminLogout from '@/components/AdminLogout'
 import DeleteWorkButton from '@/components/DeleteWorkButton'
 import ReorderWorkButtons from '@/components/ReorderWorkButtons'
@@ -14,7 +15,7 @@ export default async function AdminDashboard() {
 
   const { data: works } = await supabase
     .from('works')
-    .select('*, author:authors!works_author_id_fkey(id, name), issue:issues(*)')
+    .select(`*, ${CREDITS_SELECT}, issue:issues(*)`)
     .order('position', { ascending: true })
 
   const workList = (works ?? []) as Work[]
@@ -105,7 +106,7 @@ export default async function AdminDashboard() {
                         {work.title}
                       </Link>
                     </td>
-                    <td style={{ padding: '12px 16px', color: 'rgba(255,255,255,0.55)', fontFamily: 'sans-serif' }}>{work.author?.name ?? '—'}</td>
+                    <td style={{ padding: '12px 16px', color: 'rgba(255,255,255,0.55)', fontFamily: 'sans-serif' }}>{creditNames(sortedCredits(work)) || '—'}</td>
                     <td style={{ padding: '12px 16px', color: 'rgba(255,255,255,0.55)', fontFamily: 'sans-serif', textTransform: 'capitalize' }}>{work.media_type}</td>
                     <td style={{ padding: '12px 16px', color: 'rgba(255,255,255,0.55)', fontFamily: 'sans-serif' }}>{work.genre || '—'}</td>
                     <td style={{ padding: '12px 16px', color: 'rgba(255,255,255,0.55)', fontFamily: 'sans-serif' }}>{work.issue?.semester ?? '—'}</td>
