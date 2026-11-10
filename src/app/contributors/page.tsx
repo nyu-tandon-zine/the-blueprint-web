@@ -2,12 +2,14 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getContributors } from '@/lib/contributors'
 import { contributorPath } from '@/lib/credits'
+import Masthead from '@/components/Masthead'
+import { currentMasthead } from '@/content/masthead'
 
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Contributors — The Blueprint',
-  description: 'Everyone who has been published in The Blueprint, the NYU Tandon zine.',
+  title: 'Contributors & Masthead — The Blueprint',
+  description: 'Everyone published in The Blueprint, the NYU Tandon zine, and the team that makes it.',
 }
 
 export default async function ContributorsPage() {
@@ -50,6 +52,10 @@ export default async function ContributorsPage() {
               </li>
             ))}
           </ul>
+        )}
+
+        {currentMasthead && (
+          <Masthead masthead={currentMasthead} />
         )}
       </div>
     </main>

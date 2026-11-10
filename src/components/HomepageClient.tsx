@@ -117,24 +117,13 @@ export default function HomepageClient({ issue, works }: Props) {
         {issue.semester.toUpperCase()}
       </div>
 
-      {/* Flipbook link */}
-      <div style={{ textAlign: 'center', padding: '12px 32px 0' }}>
-        <Link href="/read" style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 8,
-          fontSize: 13,
-          fontWeight: 500,
-          color: 'rgba(255,255,255,0.75)',
-          fontFamily: 'sans-serif',
-          letterSpacing: '0.05em',
-          textDecoration: 'none',
-          border: '0.5px solid rgba(255,255,255,0.25)',
-          borderRadius: 999,
-          padding: '8px 20px',
-          transition: 'border-color 0.15s, color 0.15s',
-        }}>
+      {/* Flipbook + contributors links */}
+      <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 10, padding: '12px 32px 0' }}>
+        <Link href="/read" style={pillLinkStyle}>
           <span style={{ fontSize: 15 }}>⧉</span> Flipbook Mode
+        </Link>
+        <Link href="/contributors" style={pillLinkStyle}>
+          Contributors
         </Link>
       </div>
 
@@ -228,4 +217,21 @@ export default function HomepageClient({ issue, works }: Props) {
 
     </div>
   )
+}
+
+// Outline pill used for the secondary links under the issue title.
+const pillLinkStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 8,
+  fontSize: 13,
+  fontWeight: 500,
+  color: 'rgba(255,255,255,0.75)',
+  fontFamily: 'sans-serif',
+  letterSpacing: '0.05em',
+  textDecoration: 'none',
+  border: '0.5px solid rgba(255,255,255,0.25)',
+  borderRadius: 999,
+  padding: '8px 20px',
+  transition: 'border-color 0.15s, color 0.15s',
 }
