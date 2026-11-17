@@ -18,7 +18,7 @@ async function getPastIssues(): Promise<Issue[]> {
   const { data, error } = await supabase
     .from('issues')
     .select('id, title, semester, published_at, is_current, cover_image_url')
-    .eq('is_current', true)
+    .eq('is_current', false)
     .lte('published_at', new Date().toISOString())
     .order('published_at', {ascending: false})
 
